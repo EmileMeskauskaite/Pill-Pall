@@ -1,37 +1,290 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const SchedulePage = () => {
     const [schedule, setSchedule] = useState([]);
+    const [user, setUser] = useState({ name: 'User', email: '', id: '' });
+    const [showForm, setShowForm] = useState(false);
+    const [newMedicine, setNewMedicine] = useState({
+        medicine_name: '',
+        strength: '',
+        amount: 1,
+        times_per_day: ['08:00'],
+        start_date: '',
+        end_date: '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        reminder_minutes_before: 30,
+        send_email_reminder: true,
+        repeat_type: 'weekly',
+        days_of_week: [],
+        interval_days: null,
+        cycle_on_days: null,
+        cycle_off_days: null,
+        notes: '',
+        taken: false
+    });
+
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch schedule data from API
-        const fetchSchedule = async () => {
-            try {
-                const response = await axios.get('https://api.example.com/schedule'); // Replace with your API endpoint
-                setSchedule(response.data);
-            } catch (error) {
-                console.error('Error fetching schedule:', error);
-            }
-        };
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem('token');
 
-        fetchSchedule();
+        if (storedUser && token) {
+            setUser(storedUser);
+            fetchSchedule(token);
+        } else {
+            navigate('/login');
+        }
     }, []);
 
-    const renderSchedule = () => {
-        return schedule.map((item, index) => (
-            <div key={index} className="schedule-item">
-                <span className="time">{item.time}</span>
-                <span className="pill">{item.pill}</span>
-                <span className="drug-info">{item.drugInfo}</span> {/* Assuming API provides drugInfo */}
+    const fetchSchedule = async (token) => {
+        try {
+            const response = await fetch('http://localhost:5169/medicines', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setSchedule(data);
+            } else {
+                console.error('Failed to fetch schedule');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    };
+
+    const handleLogOff = () => {
+        localStorage.clear();
+        navigate('/login');
+    };
+
+    const handleAddMedicine = () => {
+        setShowForm(true);
+    };
+
+    const handleFormChange = (e) => {
+        const { name, value, type, checked } = e.target;
+
+        if (type === 'checkbox' && name === 'days_of_week') {
+            setNewMedicine((prev) => ({
+                ...prev,
+                days_of_week: checked
+                    ? [...prev.days_of_week, value]
+                    : prev.days_of_week.filter((d) => d !== value)
+            }));
+        } else {
+            setNewMedicine((prev) => ({
+                ...prev,
+                [name]: type === 'checkbox' ? checked : value
+            }));
+        }
+    };
+
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('http://localhost:5169/medicines/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(newMedicine),
+            });
+
+            if (response.ok) {
+                setNewMedicine({
+                    medicine_name: '',
+                    strength: '',
+                    amount: 1,
+                    times_per_day: ['08:00'],
+                    start_date: '',
+                    end_date: '',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    reminder_minutes_before: 30,
+                    send_email_reminder: true,
+                    repeat_type: 'weekly',
+                    days_of_week: [],
+                    interval_days: null,
+                    cycle_on_days: null,
+                    cycle_off_days: null,
+                    notes: '',
+                    taken: false
+                });
+                setShowForm(false);
+                fetchSchedule(token);
+            } else {
+                console.error('Failed to save medicine');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    };
+
+    const handleMarkAsTaken = async (medicineId) => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`http://localhost:5169/medicines/${medicineId}/taken`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                fetchSchedule(token);
+            } else {
+                console.error('Failed to update taken status');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const renderWeeklyCalendar = () => {
+        return (
+            <div className="container px-2">
+                {/* Weekday headers */}
+                <div className="row text-center fw-bold mb-2">
+                    {daysOfWeek.map((day) => (
+                        <div key={day} className="col border bg-light py-2">
+                            {day === today ? (
+                                <span className="text-primary">{day} (Today)</span>
+                            ) : (
+                                <span>{day}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Medicine per day */}
+                <div className="row text-center">
+                    {daysOfWeek.map((day) => {
+                        const medsForDay = schedule.filter((med) => med.days_of_week.includes(day));
+                        const isToday = today === day;
+
+                        return (
+                            <div key={day} className="col border" style={{ minHeight: '200px' }}>
+                                {medsForDay.length > 0 ? (
+                                    medsForDay.map((med) =>
+                                        med.times_per_day.map((time, i) => (
+                                            <div
+                                                key={`${med.id}-${time}-${i}`}
+                                                className={`mb-2 p-2 rounded small ${
+                                                    isToday ? 'bg-warning-subtle' : 'bg-body-tertiary'
+                                                }`}
+                                            >
+                                                <div><strong>{med.medicine_name}</strong> – {med.strength}</div>
+                                                <div>{time} – {med.amount} tablet(s)</div>
+                                                {med.notes && <div className="fst-italic small">{med.notes}</div>}
+                                                <div className={med.taken ? 'text-success' : 'text-danger'}>
+                                                    {med.taken ? 'Taken' : 'Not taken'}
+                                                </div>
+                                                {isToday && !med.taken && (
+                                                    <button
+                                                        className="btn btn-sm btn-outline-success mt-1"
+                                                        onClick={() => handleMarkAsTaken(med.id)}
+                                                    >
+                                                        Mark as Taken
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))
+                                    )
+                                ) : (
+                                    <div className="text-muted mt-3">No meds</div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
-        ));
+        );
     };
 
     return (
-        <div className="schedule-page">
-            <h1>Pill Reminder Schedule</h1>
-            <div className="schedule-list">{renderSchedule()}</div>
+        <div className="container py-4">
+            <h2 className="text-center mb-4">Welcome, {user.name}</h2>
+            <div className="d-flex justify-content-end mb-3 gap-2">
+                <button onClick={handleLogOff} className="btn btn-danger">Log Off</button>
+                <button onClick={handleAddMedicine} className="btn btn-primary">Add Medicine</button>
+            </div>
+
+            <h3 className="text-center mb-4">Weekly Pill Calendar</h3>
+            {renderWeeklyCalendar()}
+
+            {showForm && (
+                <form onSubmit={handleFormSubmit} className="mt-5 border p-3 rounded bg-light">
+                    <h4 className="mb-3">Add New Medicine</h4>
+
+                    <div className="mb-2">
+                        <label>Medicine Name</label>
+                        <input type="text" name="medicine_name" className="form-control" value={newMedicine.medicine_name} onChange={handleFormChange} required />
+                    </div>
+                    <div className="mb-2">
+                        <label>Strength (e.g. 200mg)</label>
+                        <input type="text" name="strength" className="form-control" value={newMedicine.strength} onChange={handleFormChange} required />
+                    </div>
+                    <div className="mb-2">
+                        <label>Amount (tablets per dose)</label>
+                        <input type="number" name="amount" className="form-control" value={newMedicine.amount} onChange={handleFormChange} required />
+                    </div>
+                    <div className="mb-2">
+                        <label>Time(s) per Day</label>
+                        <input
+                            type="text"
+                            name="times_per_day"
+                            className="form-control"
+                            value={newMedicine.times_per_day}
+                            onChange={(e) =>
+                                setNewMedicine({ ...newMedicine, times_per_day: [e.target.value] })
+                            }
+                        />
+                    </div>
+                    <div className="mb-2">
+                        <label>Start Date</label>
+                        <input type="date" name="start_date" className="form-control" value={newMedicine.start_date} onChange={handleFormChange} required />
+                    </div>
+                    <div className="mb-2">
+                        <label>End Date</label>
+                        <input type="date" name="end_date" className="form-control" value={newMedicine.end_date} onChange={handleFormChange} required />
+                    </div>
+                    <div className="mb-2">
+                        <label>Days of the Week</label>
+                        <div className="d-flex flex-wrap gap-2">
+                            {daysOfWeek.map(day => (
+                                <div key={day}>
+                                    <input type="checkbox" name="days_of_week" value={day} onChange={handleFormChange} checked={newMedicine.days_of_week.includes(day)} /> {day}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="mb-2">
+                        <label>Notes</label>
+                        <input type="text" name="notes" className="form-control" value={newMedicine.notes} onChange={handleFormChange} />
+                    </div>
+                    <div className="mb-2">
+                        <label>Send Email Reminder?</label>
+                        <input type="checkbox" name="send_email_reminder" checked={newMedicine.send_email_reminder} onChange={handleFormChange} />
+                    </div>
+                    <div className="mb-2">
+                        <label>Reminder Before (minutes)</label>
+                        <input type="number" name="reminder_minutes_before" className="form-control" value={newMedicine.reminder_minutes_before} onChange={handleFormChange} />
+                    </div>
+                    <button type="submit" className="btn btn-success">Save Medicine</button>
+                </form>
+            )}
         </div>
     );
 };
