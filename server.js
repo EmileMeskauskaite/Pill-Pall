@@ -1,10 +1,10 @@
 const express = require('express');
-const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
+require('./db')
+const routes = require('./routes/UsersRoutes')
 
 const app = express();
 const port = process.env.PORT;
@@ -13,31 +13,6 @@ const SECRET = process.env.JWT_SECRET;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// DB
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('Klaida prisijungiant prie duomenų bazės:', err);
-    return;
-  }
-  console.log('Pavyko prisijungti prie MySQL!');
-});
-
-// Email
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 // JWT Middleware
 function authenticateToken(req, res, next) {
@@ -53,125 +28,8 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// REGISTRATION + EMAIL VERIFICATION
-app.post('/register', async (req, res) => {
-  const { name, email, surname, password, date_of_birth } = req.body;
-
-  if (!name || !email || !surname || !password || !date_of_birth) {
-    return res.status(400).send('All fields must be filled');
-  }
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-      if (err) return res.status(500).send('Error checking email');
-      if (results.length > 0) return res.status(409).send({ message: 'Email already exists' });
-
-      const sql = `
-        INSERT INTO users (name, email, surname, password, date_of_birth, confirmed)
-        VALUES (?, ?, ?, ?, ?, false)
-      `;
-      db.query(sql, [name, email, surname, hashedPassword, date_of_birth], (err, result) => {
-        if (err) return res.status(500).send('Error creating user');
-
-        const userId = result.insertId;
-        const token = jwt.sign({ userId }, SECRET, { expiresIn: '2h' });
-
-        const confirmUrl = `http://localhost:5169/confirm?x=${token}`;
-
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: 'Confirm your account',
-          html: `<p>Hello,</p><p>Please confirm your account:</p><a href="${confirmUrl}">${confirmUrl}</a>`,
-        };
-
-        transporter.sendMail(mailOptions, (err, info) => {
-          if (err) {
-            console.error('Failed to send email:', err);
-            return res.status(500).send('Could not send confirmation email');
-          }
-
-          res.status(201).send({ message: 'Account created. Check your email.' });
-        });
-      });
-    });
-  } catch (err) {
-    console.error('Hash error:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-app.get('/confirm', (req, res) => {
-  const token = req.query.x;
-
-  if (!token) return res.status(400).send('Token missing');
-
-  try {
-    const decoded = jwt.verify(token, SECRET);
-    const userId = decoded.userId;
-
-    db.query('UPDATE users SET confirmed = true WHERE id = ?', [userId], (err, result) => {
-      if (err) return res.status(500).send('Error confirming user');
-      if (result.affectedRows === 0) return res.status(404).send('User not found');
-
-      return res.redirect('http://localhost:5173/');
-    });
-  } catch (err) {
-    console.error('Token error:', err);
-    return res.status(400).send('Invalid or expired token');
-  }
-});
-
-// LOGIN
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-    if (err) return res.status(500).send('Error finding user');
-    if (results.length === 0) return res.status(401).send({ message: 'Invalid email or password' });
-
-    const user = results[0];
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) return res.status(401).send({ message: 'Invalid email or password' });
-
-    if (!user.confirmed) {
-      const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: '2h' });
-      const confirmUrl = `http://localhost:5169/confirm?x=${token}`;
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: user.email,
-        subject: 'Confirm your account',
-        html: `<p>Hello,</p><p>Your account is not confirmed yet. Click below:</p><a href="${confirmUrl}">${confirmUrl}</a>`,
-      };
-
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error('Error sending confirmation email:', err);
-          return res.status(500).send('Could not resend confirmation email');
-        }
-
-        return res.status(403).send({ message: 'Account not confirmed. A new email has been sent.' });
-      });
-
-      return;
-    }
-
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: '2h' });
-    res.send({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-    });
-  });
-});
+// Routes
+app.use(routes);
 
 // CREATE MEDICINE
 app.post('/medicines/create', authenticateToken, (req, res) => {
