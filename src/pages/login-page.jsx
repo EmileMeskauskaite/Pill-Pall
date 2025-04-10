@@ -1,153 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const SchedulePage = () => {
-  const [schedule, setSchedule] = useState([]);
-  const [user, setUser] = useState({ name: '', id: '' });
-  const [today, setToday] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
-  const navigate = useNavigate();
+const LoginPage = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
 
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    const token = localStorage.getItem('token');
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
-    if (!storedUser || !token) {
-      navigate('/login');
-      return;
-    }
-
-    setUser(storedUser);
-    fetchSchedule(token);
-  }, []);
-
-  const fetchSchedule = async (token) => {
-    try {
-      const response = await fetch('http://localhost:5169/medicines', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSchedule(data);
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+          const response = await fetch('http://localhost:5169/login', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData),
+          });
+  
+          if (!response.ok) {
+              const data = await response.json();
+              throw new Error(data.message || 'Failed to login');
+          }
+  
+          const userData = await response.json();
+  
+          localStorage.setItem('token', userData.token);
+          localStorage.setItem('user', JSON.stringify(userData.user));
+          navigate('/schedule');
+      } catch (error) {
+          setErrorMessage(error.message);
+          setShowErrorModal(true);
       }
-    } catch (err) {
-      console.error('Failed to fetch schedule:', err);
-    }
   };
+  
 
-  const handleMarkAsTaken = async (medicineId) => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch(`http://localhost:5169/medicines/${medicineId}/taken`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        fetchSchedule(token);
-      }
-    } catch (err) {
-      console.error('Failed to update status:', err);
-    }
-  };
-
-  const renderMedicineCard = (med, isToday) => {
-    return med.times_per_day.map((time, i) => (
-      <div key={`${med.id}-${time}-${i}`} className="border rounded p-2 mb-2">
-        <strong>{med.medicine_name}</strong> – {med.strength} – {med.amount} tablet(s)
-        <br />
-        <span><strong>Time:</strong> {time}</span>
-        <br />
-        <span className={med.taken ? 'text-success' : 'text-danger'}>
-          Status: {med.taken ? 'Taken' : 'Not taken'}
-        </span>
-        {isToday && !med.taken && (
-          <div>
-            <button
-              className="btn btn-sm btn-outline-success mt-2"
-              onClick={() => handleMarkAsTaken(med.id)}
-            >
-              Mark as Taken
-            </button>
-          </div>
-        )}
-      </div>
-    ));
-  };
-
-  const renderWeeklyCalendar = () => {
     return (
-      <div className="container">
-        <div className="row text-center fw-bold">
-          {daysOfWeek.map((day) => (
-            <div key={day} className="col border p-2 bg-light">
-              {day}
-            </div>
-          ))}
-        </div>
-        <div className="row">
-          {daysOfWeek.map((day) => {
-            const medsForDay = schedule.filter((med) => med.days_of_week.includes(day));
-            const isToday = today === day;
-  
-            return (
-              <div key={day} className="col border p-2" style={{ minHeight: '180px' }}>
-                {medsForDay.length > 0 ? medsForDay.map((med) => (
-                  med.times_per_day.map((time, i) => (
-                    <div key={`${med.id}-${time}-${i}`} className={`mb-2 p-2 rounded ${isToday ? 'bg-warning-subtle' : 'bg-body-tertiary'}`}>
-                      <div><strong>{med.medicine_name}</strong> – {med.strength}</div>
-                      <div>{time} – {med.amount} tablet(s)</div>
-                      <div className={med.taken ? 'text-success' : 'text-danger'}>
-                        {med.taken ? 'Taken' : 'Not taken'}
-                      </div>
-                      {isToday && !med.taken && (
-                        <button
-                          className="btn btn-sm btn-outline-success mt-1"
-                          onClick={() => handleMarkAsTaken(med.id)}
-                        >
-                          Mark as Taken
-                        </button>
-                      )}
+        <div style={{ minHeight: '100vh', width: '100vw' }} className="d-flex justify-content-center align-items-center bg-light">
+            <div style={{ maxWidth: '420px', width: '100%', backgroundColor: 'white' }} className="p-4 rounded shadow position-relative">
+                <button className="btn-light mb-2" onClick={() => navigate('/')}>
+                    ← Back
+                </button>
+
+                <h2 className="text-center mb-4">Login</h2>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label className="form-label">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            className="form-control"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
                     </div>
-                  ))
-                )) : (
-                  <div className="text-muted">–</div>
-                )}
-              </div>
-            );
-          })}
+                    <div className="mb-3">
+                        <label className="form-label">Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            className="form-control"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="btn btn-success w-100">Log in</button>
+                </form>
+
+                <p className="text-center mt-3">
+                    Don't have an account?{' '}
+                    <button className="btn btn-link p-0" onClick={() => navigate('/register')}>
+                        Register here
+                    </button>
+                </p>
+            </div>
+
+            {/* Error Modal */}
+            {showErrorModal && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title text-danger">Login Failed</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowErrorModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <p>{errorMessage}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      </div>
     );
-  };
-  
-
-  const handleLogOff = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
-  return (
-    <div className="container py-4">
-      <h2 className="text-center mb-4">Welcome, {user.name}</h2>
-      <div className="d-flex justify-content-end mb-3">
-        <button onClick={handleLogOff} className="btn btn-danger">Log Off</button>
-      </div>
-
-      <h3 className="text-center mb-4">Your Weekly Medicine Schedule</h3>
-
-      {renderWeeklyCalendar()}
-    </div>
-  );
 };
 
-export default SchedulePage;
+export default LoginPage;

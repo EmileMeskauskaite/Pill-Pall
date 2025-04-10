@@ -12,6 +12,7 @@ const RegisterPage = () => {
         password: '',
         repeatPassword: ''
     });
+
     const [error, setError] = useState(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const navigate = useNavigate();
@@ -30,7 +31,6 @@ const RegisterPage = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-
         const { name, surname, date_of_birth, email, password, repeatPassword } = form;
 
         if (!name || !surname || !date_of_birth || !email || !password || !repeatPassword) {
@@ -57,45 +57,36 @@ const RegisterPage = () => {
                 },
                 body: JSON.stringify({ name, surname, date_of_birth, email, password }),
             });
-
+        
             if (!response.ok) {
-                const message = await response.text();
-                throw new Error(message || 'Failed to register');
+                const data = await response.json(); // ← FIX
+                throw new Error(data.message || 'Failed to register');
             }
-
+        
             setShowSuccessModal(true);
         } catch (err) {
-            if (err.message.includes('Toks el. paštas jau egzistuoja')) {
-                setError('El. paštas jau registruotas. Prašome prisijungti arba naudoti kitą el. paštą.');
-            } else {
-                setError(err.message || 'Nepavyko užsiregistruoti');
-            }
+            setError(err.message || 'Registration failed.');
         }
+        
     };
 
     return (
         <div
             style={{ minHeight: '100vh', width: '100vw' }}
-            className="d-flex justify-content-center align-items-center"
+            className="d-flex justify-content-center align-items-center bg-light"
         >
-            {/* Form container */}
             <div
                 style={{ maxWidth: '420px', width: '100%', backgroundColor: 'white', position: 'relative' }}
                 className="p-4 rounded shadow"
             >
-                {/* Floating Back Button */}
-                <button
-                    className="btn-light"
-                    onClick={() => window.history.back()}
-                >
+                {/* Back */}
+                <button className="btn-light mb-2" onClick={() => window.history.back()}>
                     ← Back
                 </button>
-    
+
                 <h2 className="text-center mb-4">Register</h2>
-    
+
                 <form onSubmit={handleRegister}>
-                    {error && <div className="alert alert-danger">{error}</div>}
-    
                     <div className="mb-3">
                         <label className="form-label">First Name</label>
                         <input
@@ -156,40 +147,66 @@ const RegisterPage = () => {
                             onChange={handleChange}
                         />
                     </div>
-    
+
                     <button type="submit" className="btn btn-success w-100">Register</button>
                 </form>
-    
+
                 <p className="text-center mt-3">
                     Already have an account?{' '}
                     <button className="btn btn-link p-0" onClick={() => navigate('/login')}>
                         Login here
                     </button>
                 </p>
-    
-                {showSuccessModal && (
-                    <>
-                        <div className="modal fade show d-block" tabIndex="-1">
-                            <div className="modal-dialog modal-dialog-centered">
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">Success</h5>
-                                    </div>
-                                    <div className="modal-body">
-                                        <p>Successfully Registered!</p>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button className="btn btn-primary" onClick={() => navigate('/')}>
-                                            OK
-                                        </button>
-                                    </div>
+            </div>
+
+            {/* ✅ Error Modal */}
+            {error && (
+                <>
+                    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title text-danger">Registration Failed</h5>
+                                    <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+                                </div>
+                                <div className="modal-body">
+                                    <p>{error}</p>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={() => setError(null)}>
+                                        Close
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div className="modal-backdrop fade show"></div>
-                    </>
-                )}
-            </div>
+                    </div>
+                    <div className="modal-backdrop fade show"></div>
+                </>
+            )}
+
+            {/* ✅ Success Modal */}
+            {showSuccessModal && (
+                <>
+                    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Success</h5>
+                                </div>
+                                <div className="modal-body">
+                                    <p>Successfully Registered! Please check your email to confirm.</p>
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="btn btn-primary" onClick={() => navigate('/')}>
+                                        OK
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-backdrop fade show"></div>
+                </>
+            )}
         </div>
     );
 };

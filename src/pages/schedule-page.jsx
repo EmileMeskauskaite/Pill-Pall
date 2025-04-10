@@ -107,7 +107,7 @@ const SchedulePage = () => {
                     medicine_name: '',
                     strength: '',
                     amount: 1,
-                    times_per_day: ['08:00'],
+                    times_per_day: '',
                     start_date: '',
                     end_date: '',
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -124,7 +124,6 @@ const SchedulePage = () => {
                 setShowForm(false);
                 fetchSchedule(token);
             } else {
-                console.error('Failed to save medicine');
             }
         } catch (err) {
             console.error('Error:', err);
@@ -213,6 +212,42 @@ const SchedulePage = () => {
         );
     };
 
+    const [pillAmount, setPillAmount] = useState(0);
+    const [hours, setHours] = useState(0);
+    const [minutes, setMinutes] = useState(0);
+
+    const handleNumberChange = (e) => {
+        const { value, name } = e.target; 
+        
+        if (/^\d*$/.test(value)) {
+          if (name === 'hour') {
+            // For hours
+            if (value === '' || parseInt(value) <= 23) {
+              setHours(value);
+            } else {
+              e.target.value = '';
+            }
+          } else if (name === 'minute') {
+            // For minutes
+            if (value === '' || parseInt(value) <= 59) {
+              setMinutes(value);
+            } else {
+              e.target.value = '';
+            }
+            // For amount
+          } else if (name === 'amount') {
+            if (value === '' || typeof parseInt(value) === 'number') {
+                setPillAmount(value);
+            } else {
+                e.target.value = '';
+            }
+          }
+        } else {
+          e.target.value = '';
+        }
+      };
+    
+
     return (
         <div className="container py-4">
             <h2 className="text-center mb-4">Welcome, {user.name}</h2>
@@ -238,19 +273,18 @@ const SchedulePage = () => {
                     </div>
                     <div className="mb-2">
                         <label>Amount (tablets per dose)</label>
-                        <input type="number" name="amount" className="form-control" value={newMedicine.amount} onChange={handleFormChange} required />
+                        <input type="int" name="amount" placeholder="e.g.: 5" className="form-control" pattern="^(?:1[0-9]|2[0-3]|[0-9])$"  onChange={handleNumberChange}/>
                     </div>
                     <div className="mb-2">
-                        <label>Time(s) per Day</label>
-                        <input
-                            type="text"
-                            name="times_per_day"
-                            className="form-control"
-                            value={newMedicine.times_per_day}
-                            onChange={(e) =>
-                                setNewMedicine({ ...newMedicine, times_per_day: [e.target.value] })
-                            }
-                        />
+                        <label>Time</label>
+                        <div>
+                            Hour
+                            <input type="int" name = "hour" placeholder="e.g.: 23" className="form-control" pattern="^(?:1[0-9]|2[0-3]|[0-9])$" maxLength="2" onChange={handleNumberChange}/>
+                        </div>
+                        <div>
+                            Minutes
+                            <input type="int" name = "minute" placeholder="e.g.: 59" className="form-control" pattern="^(?:1[0-9]|2[0-3]|[0-9])$" maxLength="2" onChange={handleNumberChange}/>
+                        </div>
                     </div>
                     <div className="mb-2">
                         <label>Start Date</label>
