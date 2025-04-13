@@ -29,17 +29,23 @@ const SchedulePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user'));
-        const token = localStorage.getItem('token');
-
-        if (storedUser && token) {
-            setUser(storedUser);
-            fetchSchedule(token);
-        } else {
+        try {
+            const userStr = localStorage.getItem('user');
+            const storedUser = userStr ? JSON.parse(userStr) : null;
+            const token = localStorage.getItem('token');
+    
+            if (storedUser && token) {
+                setUser(storedUser);
+                fetchSchedule(token);
+            } else {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Failed to parse user from localStorage:', error);
             navigate('/login');
         }
     }, []);
-
+    
     const fetchSchedule = async (token) => {
         try {
             const response = await fetch('http://localhost:5169/medicines', {

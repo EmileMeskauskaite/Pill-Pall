@@ -59,7 +59,7 @@ const RegisterPage = () => {
             });
         
             if (!response.ok) {
-                const data = await response.json(); // ← FIX
+                const data = await response.json(); 
                 throw new Error(data.message || 'Failed to register');
             }
         
@@ -79,7 +79,6 @@ const RegisterPage = () => {
                 style={{ maxWidth: '420px', width: '100%', backgroundColor: 'white', position: 'relative' }}
                 className="p-4 rounded shadow"
             >
-                {/* Back */}
                 <button className="btn-light mb-2" onClick={() => window.history.back()}>
                     ← Back
                 </button>
