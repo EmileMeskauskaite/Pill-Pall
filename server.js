@@ -3,8 +3,9 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-require('./db')
-const routes = require('./routes/UsersRoutes')
+require('./db');
+
+const routes = require('./routes/UsersRoutes');
 
 const app = express();
 const port = process.env.PORT;
@@ -14,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// JWT Middleware
+// JWT Middleware for protected routes
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -28,10 +29,10 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Routes
+// Use the routes from UsersRoutes
 app.use(routes);
 
-// CREATE MEDICINE
+// Example additional routes for medicines (unchanged)
 app.post('/medicines/create', authenticateToken, (req, res) => {
   const {
     medicine_name,
@@ -92,7 +93,6 @@ app.post('/medicines/create', authenticateToken, (req, res) => {
   );
 });
 
-// GET USER MEDICINES
 app.post('/medicines', authenticateToken, (req, res) => {
   const userId = req.user.id;
 
@@ -124,7 +124,6 @@ app.post('/medicines', authenticateToken, (req, res) => {
   );
 });
 
-// MARK AS TAKEN
 app.put('/medicines/:id/taken', authenticateToken, (req, res) => {
   const medicineId = req.params.id;
   const userId = req.user.id;
@@ -149,5 +148,5 @@ app.put('/medicines/:id/taken', authenticateToken, (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Serveris veikia http://localhost:${port}`);
+  console.log(`Server is running at http://localhost:${port}`);
 });

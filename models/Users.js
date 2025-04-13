@@ -1,6 +1,9 @@
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+require('dotenv').config();
+
+const SECRET = process.env.JWT_SECRET;
 
 module.exports = {
   checkEmailExists: async (email) => {
@@ -9,27 +12,36 @@ module.exports = {
         "SELECT id FROM users WHERE email = ?",
         [email]
       );
-      return response.length > 0 ? true : false;
+      return response.length > 0;
     } catch (err) {
-      console.log(err);
+      console.error("Error checking email:", err);
       throw new Error("Error checking email in the database.");
     }
   },
 
   registerUser: async (name, email, surname, password_hash, date_of_birth) => {
     try {
-      const result = await db.query(
+      // mysql2 returns [result, fields]
+      const [result] = await db.query(
         "INSERT INTO users (name, email, surname, password, date_of_birth, confirmed) VALUES (?, ?, ?, ?, ?, false)",
         [name, email, surname, password_hash, date_of_birth]
       );
-      return result.insertId;
+  
+      // Log the full result to be 100% sure what you're seeing
+  
+      const userId = result.insertId;
+  
+      return userId;
     } catch (err) {
+      console.error("Error registering user:", err);
       throw new Error("Error registering user.");
     }
   },
-
-  generateEmailToken: (userId, secret) => {
-    return jwt.sign({ userId }, secret, { expiresIn: '2h' });
+  
+  generateEmailToken: (userId) => {
+    // Ensure the token payload includes userId.
+    const token = jwt.sign({ userId }, SECRET, { expiresIn: '2h' });
+    return token;
   },
   
   sendConfirmationEmail: (email, token, transporter) => {
@@ -38,9 +50,10 @@ module.exports = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Confirm your account',
-      html: `<p>Hello,</p><p>Please confirm your account:</p><a href="${confirmUrl}">${confirmUrl}</a>`,
+      html: `<p>Hello,</p>
+             <p>Please confirm your account by clicking the following link:</p>
+             <a href="${confirmUrl}">${confirmUrl}</a>`,
     };
-
     return transporter.sendMail(mailOptions);
   },
 
@@ -52,9 +65,8 @@ module.exports = {
       );
       return result.affectedRows > 0;
     } catch (err) {
-      console.log(err);
+      console.error("Error confirming user:", err);
       throw new Error("Error confirming user.");
-      
     }
   },
 
@@ -67,9 +79,8 @@ module.exports = {
       const [results] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
       return results.length > 0 ? results[0] : null;
     } catch (err) {
-      console.log(err);
+      console.error("Error finding user:", err);
       throw new Error("Error finding user.");
     }
   },
-
 };
