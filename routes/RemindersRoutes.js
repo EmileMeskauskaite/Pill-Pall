@@ -3,11 +3,15 @@ const RemindersController = require("../controllers/RemindersController");
 
 const router = express.Router();
 
-router.get("/:userId/reminders", RemindersController.getAll);
-router.get("/:userId/reminders/:reminderId", RemindersController.getOne);
-router.post("/reminders", RemindersController.create);
-router.put("/:userId/reminders/:reminderId", RemindersController.update);
-router.delete("/:userId/reminders/:reminderId", RemindersController.delete);
-router.delete("/:userId/reminders", RemindersController.deleteMultiple);
+router.get("/:userId/rules", RemindersController.getAllRules);
+router.get("/:userId/rules/:reminderId", RemindersController.getOneRule);
+router.put("/:userId/rules/:reminderId", RemindersController.updateRule);
+router.delete("/:userId/rules/:reminderId", RemindersController.deleteRule);
+router.delete("/:userId/rules", RemindersController.deleteMultipleRules);
+router.post("/rules", RemindersController.createRule);
+
+// Actual reminders
+router.get("/:userId/reminders", RemindersController.getAllReminders);
+router.put("/:reminderId/reminders", RemindersController.updateTakenStatus);
 
 module.exports = router;

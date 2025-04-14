@@ -54,4 +54,81 @@ module.exports = {
     );
     return result.affectedRows;
   },
+
+  // Actual reminders
+  getAllReminders: async (userId) => {
+    try {
+      const [reminders] = await db.query(
+        `SELECT reminders.*, reminder_rules.medicine_id, reminder_time
+         FROM reminders
+         JOIN reminder_rules ON reminders.reminder_rules_id = reminder_rules.id
+         WHERE reminder_rules.user_id = ?`,
+        [userId]
+      );
+      return reminders;
+    } catch (err) {
+      console.error("Error fetching reminders:", err);
+      throw err;
+    }
+  },
+
+  updateTakenStatus: async (reminderId, taken) => {
+    try {
+      const [result] = await db.query(
+        "UPDATE reminders SET taken = ? WHERE id = ?",
+        [taken, reminderId]
+      );
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error("Error updating reminder taken status:", err);
+      throw err;
+    }
+  },
+
+  updateSentEmailStatus: async (reminderId, sent) => {
+    try {
+      const [result] = await db.query(
+        "UPDATE reminders SET sent_email = ? WHERE id = ?",
+        [sent, reminderId]
+      );
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error("Error updating sent_email status:", err);
+      throw err;
+    }
+  },
+
+  createReminders: async (reminder_rules_id, startDate, endDate, weekDay) => {
+    try {
+      const remindersToInsert = [];
+
+      let current = new Date(startDate);
+      const end = new Date(endDate);
+
+      while (current <= end) {
+        if (current.getDay() === weekDay) {
+          const formattedDate = current.toISOString().split("T")[0]; // YYYY-MM-DD
+          remindersToInsert.push([formattedDate, reminder_rules_id]);
+        }
+        current.setDate(current.getDate() + 1);
+      }
+
+      if (remindersToInsert.length === 0) {
+        return 0;
+      }
+
+      const [result] = await db.query(
+        "INSERT INTO reminders (reminder_date, reminder_rules_id) VALUES ?",
+        [remindersToInsert]
+      );
+
+      return result.affectedRows;
+    } catch (err) {
+      console.error("Error creating reminders:", err);
+      throw new Error("Could not create reminders.");
+    }
+  },
+
+  // TODO - delete range of reminders that do not fall into new range, do not touch past reminders.
+
 };

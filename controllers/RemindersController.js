@@ -1,7 +1,7 @@
 const Reminders = require("../models/Reminders");
 
 module.exports = {
-  getAll: async (req, res) => {
+  getAllRules: async (req, res) => {
     try {
       const { userId } = req.params;
       const reminders = await Reminders.getAllReminderRulesForUser(userId);
@@ -12,7 +12,7 @@ module.exports = {
     }
   },
 
-  getOne: async (req, res) => {
+  getOneRule: async (req, res) => {
     try {
       const { userId, reminderId } = req.params;
       const reminder = await Reminders.getReminderRuleById(userId, reminderId);
@@ -25,10 +25,12 @@ module.exports = {
     }
   },
 
-  create: async (req, res) => {
+  createRule: async (req, res) => {
     try {
       const reminderData = req.body;
       const reminderId = await Reminders.createReminderRule(reminderData);
+
+      const reminders = await Reminders.createReminders(reminderId, req.body.start_date, req.body.end_date, req.body.week_day);
       res.status(201).json({ id: reminderId });
     } catch (err) {
       console.error(err);
@@ -36,7 +38,7 @@ module.exports = {
     }
   },
 
-  update: async (req, res) => {
+  updateRule: async (req, res) => {
     try {
       const { userId, reminderId } = req.params;
       const updated = await Reminders.updateReminderRule(
@@ -55,7 +57,7 @@ module.exports = {
     }
   },
 
-  delete: async (req, res) => {
+  deleteRule: async (req, res) => {
     try {
       const { userId, reminderId } = req.params;
       const deleted = await Reminders.deleteReminderRule(userId, reminderId);
@@ -70,7 +72,7 @@ module.exports = {
     }
   },
 
-  deleteMultiple: async (req, res) => {
+  deleteMultipleRules: async (req, res) => {
     try {
       const { userId } = req.params;
       let { ids } = req.body;
@@ -92,11 +94,42 @@ module.exports = {
           });
       }
 
-      const deletedCount = await Reminders.deleteMultipleReminderRule(userId, ids);
+      const deletedCount = await Reminders.deleteMultipleReminderRules(userId, ids);
       res.status(200).json({ message: `Deleted ${deletedCount} reminder(s).` });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Error deleting reminders." });
     }
   },
+
+  // Actual Reminders
+  getAllReminders: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const reminders = await Reminders.getAllReminders(userId);
+      res.status(200).json(reminders);
+    } catch (err) {
+      res.status(500).json({ error: "Error fetching reminders." });
+    }
+  },
+
+  updateTakenStatus: async (req, res) => {
+    try {
+      const reminderId = req.params.reminderId;
+
+      if (!('taken' in req.body)) {
+        return res.status(400).json({ error: "Can't find taken field." });
+      }
+
+      const updated = await Reminders.updateTakenStatus(reminderId, req.body.taken);
+      if (updated > 0) {
+        res.status(200).json({ message: "Reminder updated." });
+      } else {
+        res.status(404).json({ error: "Reminder not found." });
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Error updating reminder." });
+    }
+  },
+
 };
