@@ -15,19 +15,7 @@ CREATE TABLE IF NOT EXISTS medicines (
   medicine_name VARCHAR(255) NOT NULL,
   strength VARCHAR(100),
   amount VARCHAR(100),
-  times_per_day JSON,
-  -- start_date DATE,
-  -- end_date DATE,
-  timezone VARCHAR(100),
-  reminder_minutes_before INT,
-  send_email_reminder BOOLEAN,
-  repeat_type VARCHAR(100),
-  -- days_of_week JSON,
-  interval_days INT,
-  cycle_on_days INT,
-  cycle_off_days INT,
   notes TEXT,
-  taken BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS reminders (
@@ -35,8 +23,12 @@ CREATE TABLE IF NOT EXISTS reminders (
   medicine_id INT NOT NULL,
   user_id INT NOT NULL,
   reminder_id INT,
+  send_email_reminder BOOLEAN,
+  taken BOOLEAN DEFAULT FALSE,
+  reminder_minutes_before INT,
   start_date DATE,
   end_date DATE,
+  reminder_time TIME,
   week_day INT,
   FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

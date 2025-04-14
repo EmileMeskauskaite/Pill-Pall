@@ -22,16 +22,17 @@ const runSql = async (sql) => {
   }
 };
 
-// Setup schema
-const schemaPath = path.join(__dirname, "schema.sql");
-const schemaSql = fs.readFileSync(schemaPath, "utf8");
+const setupDatabase = async () => {
+  const schemaPath = path.join(__dirname, "schema.sql");
+  const schemaSql = fs.readFileSync(schemaPath, "utf8");
 
-runSql(schemaSql);
+  const dummyPath = path.join(__dirname, "dummydata.sql");
+  const dummySql = fs.readFileSync(dummyPath, "utf8");
 
-// Setup dummy data
-const dummyPath = path.join(__dirname, "dummydata.sql");
-const dummySql = fs.readFileSync(dummyPath, "utf8");
+  await runSql(schemaSql, "Schema");
+  await runSql(dummySql, "Dummy Data");
+};
 
-runSql(dummySql);
+setupDatabase();
 
 module.exports = db;
