@@ -21,14 +21,11 @@ module.exports = {
 
   registerUser: async (name, email, surname, password_hash, date_of_birth) => {
     try {
-      // mysql2 returns [result, fields]
       const [result] = await db.query(
         "INSERT INTO users (name, email, surname, password, date_of_birth, confirmed) VALUES (?, ?, ?, ?, ?, false)",
         [name, email, surname, password_hash, date_of_birth]
       );
-  
-      // Log the full result to be 100% sure what you're seeing
-  
+    
       const userId = result.insertId;
   
       return userId;
@@ -39,7 +36,6 @@ module.exports = {
   },
   
   generateEmailToken: (userId) => {
-    // Ensure the token payload includes userId.
     const token = jwt.sign({ userId }, SECRET, { expiresIn: '2h' });
     return token;
   },

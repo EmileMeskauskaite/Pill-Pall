@@ -53,5 +53,44 @@ module.exports = {
       console.error(err);
       res.status(500).json({ error: "Error updating medicine." });
     }
+  },
+
+  delete: async (req, res) => {
+    const { userId, medicineId } = req.params;
+  
+    try {
+      const deleted = await Medicines.deleteMedicineForUser(userId, medicineId);
+      if (!deleted) return res.status(404).json({ error: "Medicine not found or not deleted." });
+      res.status(200).json({ message: "Medicine deleted" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error deleting medicine." });
+    }
+  },
+
+  deleteMultiple: async (req, res) => {
+    const userId = req.params.userId;
+    let { ids } = req.body;
+
+    // In case ids array comes as a string
+    if (typeof ids === 'string') {
+      try {
+        ids = JSON.parse(ids);
+      } catch (err) {
+        return res.status(400).json({ error: "Invalid format for IDs." });
+      }
+    }
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "Provide an array of medicine IDs to delete." });
+    }
+  
+    try {
+      const deletedCount = await Medicines.deleteMultipleMedicines(userId, ids);
+      res.status(200).json({ message: `Deleted ${deletedCount} medicines.` });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error deleting medicines." });
+    }
   }
 };

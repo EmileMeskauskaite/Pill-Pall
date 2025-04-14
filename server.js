@@ -6,6 +6,7 @@ require('dotenv').config();
 require('./db')
 const userRoutes = require('./routes/UsersRoutes')
 const medicineRoutes = require('./routes/MedicinesRoutes')
+const reminderRoutes = require('./routes/RemindersRoutes')
 
 const app = express();
 const port = process.env.PORT;
@@ -32,6 +33,7 @@ function authenticateToken(req, res, next) {
 // Routes
 app.use(userRoutes);
 app.use(medicineRoutes);
+app.use(reminderRoutes);
 
 app.listen(port, () => {
   console.log(`Serveris veikia http://localhost:${port}`);

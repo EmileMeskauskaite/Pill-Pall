@@ -27,5 +27,21 @@ module.exports = {
       [medicine_name, strength, amount, notes, medicineId, userId]
     );
     return result.affectedRows > 0;
+  },
+
+  deleteMedicineForUser: async (userId, medicineId) => {
+    const [result] = await db.query(
+      "DELETE FROM medicines WHERE id = ? AND user_id = ?",
+      [medicineId, userId]
+    );
+    return result.affectedRows > 0;
+  },  
+
+  deleteMultipleMedicines: async (userId, medicineIds) => {
+    if (!medicineIds.length) return false;
+    const placeholders = medicineIds.map(() => '?').join(',');
+    const query = `DELETE FROM medicines WHERE user_id = ? AND id IN (${placeholders})`;
+    const [result] = await db.query(query, [userId, ...medicineIds]);
+    return result.affectedRows;
   }
 };

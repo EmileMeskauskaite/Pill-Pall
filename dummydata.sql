@@ -10,3 +10,11 @@ VALUES
   (3, 1, 'Lisinopril', '10mg', '1 tablet', 'Take every morning, monitor blood pressure'),
   (4, 2, 'Metformin', '850mg', '1 tablet', 'Take with breakfast and dinner'),
   (5, 2, 'Atorvastatin', '20mg', '1 tablet', 'Take at bedtime to lower cholesterol');
+INSERT INTO reminders (
+  medicine_id, user_id, send_email_reminder, taken, reminder_minutes_before,
+  start_date, end_date, reminder_time, week_day
+)
+VALUES
+(1, 1, true, false, 15, '2025-04-15', '2025-04-30', '08:00:00', 1),
+(1, 1, false, false, 30, '2025-04-15', '2025-04-30', '20:00:00', 3),
+(2, 1, true, false, 10, '2025-04-16', '2025-04-25', '07:30:00', 5);
