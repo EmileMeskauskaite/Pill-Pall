@@ -6,6 +6,7 @@ import MainPage from './pages/main-page';
 import RegisterPage from './pages/register-page';
 import LoginPage from './pages/login-page';
 import SchedulePage from './pages/schedule-page';
+import CreateMedicinePage from './pages/CreateMedicinePage';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/schedule" element={<SchedulePage />} />
+                <Route path="/create-medicine" element={<CreateMedicinePage />} />
                
             </Routes>
         </Router>
