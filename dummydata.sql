@@ -1,5 +1,4 @@
 -- SQLBook: Code
-USE pillpal;
 INSERT IGNORE INTO users (id, name, surname, email, password, date_of_birth, confirmed)
 VALUES 
   (1, 'John', 'Doe', 'test@gmail.com', '$2b$10$zzrih6HjyMO6WXJ/5bLxdO4Y252CSx0jLcQB.YLTQR5yrYUs/.UiG', '1990-01-01', 1),
@@ -19,3 +18,13 @@ VALUES
 (1, 1, 15, '2025-04-15', '2025-04-30', '08:00:00', 1),
 (1, 1, 30, '2025-04-15', '2025-04-30', '20:00:00', 3),
 (2, 1, 10, '2025-04-16', '2025-04-25', '07:30:00', 5);
+INSERT IGNORE INTO reminders (reminder_date, reminder_rules_id)
+VALUES 
+('2025-04-07', 1),
+('2025-04-14', 1),
+('2025-04-21', 1),
+('2025-04-28', 1),
+('2025-04-16', 2),
+('2025-04-23', 2),
+('2025-04-18', 3),
+('2025-04-25', 3);

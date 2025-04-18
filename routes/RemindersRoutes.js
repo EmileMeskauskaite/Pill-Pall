@@ -13,5 +13,5 @@ router.post("/rules", RemindersController.createRule);
 // Actual reminders
 router.get("/:userId/reminders", RemindersController.getAllReminders);
 router.put("/:reminderId/reminders", RemindersController.updateTakenStatus);
-
+router.get("/reminders/:medicineId", RemindersController.getRulesByMedicineId);   
 module.exports = router;

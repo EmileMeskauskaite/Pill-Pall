@@ -101,14 +101,19 @@ module.exports = {
   createReminders: async (reminder_rules_id, startDate, endDate, weekDay) => {
     try {
       const remindersToInsert = [];
-
+      console.log(reminder_rules_id, startDate, endDate, weekDay);
       let current = new Date(startDate);
       const end = new Date(endDate);
 
       while (current <= end) {
-        if (current.getDay() === weekDay) {
+        console.log("Current date:", current);
+        console.log("Week day:", weekDay);
+        console.log("Current day:", current.getDay());
+        if (current.getDay() == weekDay) {
           const formattedDate = current.toISOString().split("T")[0]; // YYYY-MM-DD
           remindersToInsert.push([formattedDate, reminder_rules_id]);
+          console.log("Adding reminder:", formattedDate, reminder_rules_id);
+          console.log(remindersToInsert);
         }
         current.setDate(current.getDate() + 1);
       }
@@ -129,6 +134,13 @@ module.exports = {
     }
   },
 
-  // TODO - delete range of reminders that do not fall into new range, do not touch past reminders.
+  getRulesByMedicineId: async (medicineId) => {
+    const [reminderRules] = await db.query(
+        "SELECT * FROM reminder_rules WHERE medicine_id = ?",
+        [medicineId]
+    );
+    return reminderRules;
+}
+
 
 };

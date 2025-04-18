@@ -9,8 +9,8 @@ db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  // database: process.env.DB_NAME, ----pasirenkamas per schema
-  multipleStatements: true, // Kad eitu daug tables deti i schema.sql
+  database: process.env.DB_NAME,
+  multipleStatements: true, // allow placing many tables in schema.
 });
 
 const runSql = async (sql) => {
