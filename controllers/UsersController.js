@@ -124,29 +124,32 @@ const removeUserFromCaretaker = async (req, res) => {
 const sendCaretakerConfirmation = async (req, res) => {
   const { caretakerId, userEmail, caretakerName, caretakerSurname } = req.body;
   let user;
+  
   try {
     user = await Users.getUserByEmail(userEmail);
     if (user == null) {
-      console.log("User with such email does not exist.");
-      res.status(400).json({error: "User with such email does not exist."})
-    } else if (user.confirmed == false){
-      res.status(400).json({error: "This user has not confirmed their email yet."})
+      console.log("hello");
+      return res.status(400).json({ error: "User with such email does not exist." });
+    } else if (user.confirmed === false) {
+      return res.status(400).json({ error: "This user has not confirmed their email yet." });
     }
   } catch (err) {
-    res.status(500).json({error: "Issue with the server."})
+    return res.status(500).json({ error: "Issue with the server." });
   }
+
   try {
     await Users.createCaretakerUser(caretakerId, user.id);
   } catch (err) {
-    res.status(400).json({error: err.message});
+    return res.status(400).json({ error: err.message });
   }
+
   try {
     const token = Users.generateCaretakerLinkToken(caretakerId, user.id);
     await Users.sendCaretakerLinkEmail(userEmail, token, transporter, caretakerName, caretakerSurname);
-    res.json({ message: "Confirmation email sent" });
+    return res.json({ message: "Confirmation email sent" });
   } catch (err) {
     console.error("Error sending caretaker confirmation:", err);
-    res.status(500).json({ error: "Could not send confirmation" });
+    return res.status(500).json({ error: "Could not send confirmation" });
   }
 };
 
