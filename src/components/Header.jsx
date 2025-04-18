@@ -6,6 +6,7 @@ import logo from "../assets/logo.png";
 const Header = () => {
   const urlPath = useLocation().pathname;
 
+  const caretakerData = localStorage.getItem("caretaker");
   const handleLogOff = () => {
     localStorage.clear();
   };
@@ -14,28 +15,51 @@ const Header = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3 mx-4">
         {/* Logo on the left */}
-        <Link to="/schedule">
+        <Link to="">
           <img src={logo} style={{ width: "100px", height: "auto" }} />
         </Link>
 
-        {/* Buttons on the right */}
         <div className="d-flex gap-4">
-          {/* Log Off Button */}
-          <Link onClick={handleLogOff} to="/login" className="btn btn-danger">
-            Log Off
-          </Link>
+          {/* Go back to caretaker page */}
+          {!urlPath.includes("/caretaker-page") && caretakerData && (
+            <Link
+              className="btn btn-warning"
+              to="/caretaker-page"
+              style={{ width: "200px" }}
+            >
+              User List
+            </Link>
+          )}
           {/* Medicine Button */}
-          {urlPath.includes("/schedule") && (
-            <Link className="btn btn-primary" to="/medicine">
+          {(urlPath.includes("/schedule") || urlPath.includes("/reminder")) && (
+            <Link
+              className="btn btn-primary"
+              to="/medicine"
+              style={{ width: "200px" }}
+            >
               Medicine
             </Link>
           )}
+
           {/* Schedules Button */}
           {urlPath.includes("/medicine") && (
-            <Link className="btn btn-primary" to="/schedule">
+            <Link
+              className="btn btn-primary"
+              to="/schedule"
+              style={{ width: "200px" }}
+            >
               Schedules
             </Link>
           )}
+          {/* Log Off Button */}
+          <Link
+            onClick={handleLogOff}
+            to="/login"
+            className="btn btn-danger"
+            style={{ width: "200px" }}
+          >
+            Log Off
+          </Link>
         </div>
       </div>
     </>

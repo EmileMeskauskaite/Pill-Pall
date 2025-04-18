@@ -86,6 +86,151 @@ label {
   background-color: #29a143;
   color: #ffffff;
 }
+/* For warnings */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.warning-box {
+  padding: 20px 30px;
+  border-radius: 10px;
+  border: 1px solid #ffeeba;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  min-width: 300px;
+  margin-bottom: 40vh;
+}
+
+.modal-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* For success button */
+.success-toast {
+  position: fixed;
+  top: 3em;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  font-weight: 500;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.form-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.form-modal {
+  position: relative;
+  background-color: white;
+  padding: 2em;
+  padding-top: 0em;
+  border-radius: 1em;
+  width: calc(100% - 8em);
+  height: calc(100% - 3em); 
+  overflow: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-modal-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding-top: 1em;
+  padding-bottom: 0.5em;
+}
+
+.reminder-modal-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow-y: auto;
+}
+
+.reminder-modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reminder-modal-close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+}
+
+.reminder-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reminder-modal-checkbox-container {
+  margin-top: 20px;
+}
+
+.reminder-modal h2 {
+  margin-bottom: 10px;
+}
+
+.reminder-modal p {
+  font-size: 14px;
+}
+
+.connected-user-cell {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.connected-user-cell:hover {
+  background-color: #e7f1ff; /* Light blue highlight */
+  text-decoration: underline;
+}
+
 @media (max-width: 576px) {
   .card-container-right {
     top: 15em;

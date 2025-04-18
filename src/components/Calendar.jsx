@@ -1,7 +1,12 @@
 import { useState } from "react";
+import ReminderButton from "./buttons/ReminderButton";
 
-const Calendar = () => {
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+const Calendar = (props) => {
+  const { dateRange, reminders, refetch } = props;
+
+  if (!dateRange?.start || !reminders) {
+    return <div>Loading calendar...</div>;
+  }
 
   const daysOfWeek = [
     "Monday",
@@ -13,129 +18,74 @@ const Calendar = () => {
     "Sunday",
   ];
 
-  const [schedule, setSchedule] = useState([]);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const fetchSchedule = async (token) => {
-    try {
-      const response = await fetch("http://localhost:5169/medicines", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSchedule(data);
-      } else {
-        console.error("Failed to fetch schedule");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-    }
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${day}/${month}`;
   };
 
-  const renderWeeklyCalendar = () => {
-    const handleMarkAsTaken = async (medicineId) => {
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(
-          `http://localhost:5169/medicines/${medicineId}/taken`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  const getWeekDates = (startDate) => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      date.setHours(0, 0, 0, 0);
+      dates.push(date);
+    }
+    return dates;
+  };
 
-        if (response.ok) {
-          fetchSchedule(token);
-        } else {
-          console.error("Failed to update taken status");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
+  const weekDates = getWeekDates(new Date(dateRange.start));
 
-    return (
-      <div className="container px-2">
-        {/* Weekday headers */}
-        <div className="row text-center fw-bold mb-2">
-          {daysOfWeek.map((day) => (
-            <div key={day} className="col border bg-light py-2">
-              {day === today ? (
-                <span className="text-primary">{day} (Today)</span>
-              ) : (
-                <span>{day}</span>
-              )}
-            </div>
-          ))}
-        </div>
+  const groupedReminders = reminders.reduce((acc, reminder) => {
+    const date = new Date(reminder.reminder_date);
+    date.setHours(0, 0, 0, 0);
+    const key = date.toISOString().split("T")[0];
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(reminder);
+    return acc;
+  }, {});
 
-        {/* Medicine per day */}
-        <div className="row text-center">
-          {daysOfWeek.map((day) => {
-            const medsForDay = schedule.filter((med) =>
-              med.days_of_week.includes(day)
-            );
-            const isToday = today === day;
+  return (
+    <div className="container px-2">
+      <div className="row">
+        {weekDates.map((date, index) => {
+          const key = date.toISOString().split("T")[0];
+          const remindersForDay = groupedReminders[key] || [];
+          const isToday = date.getTime() === today.getTime();
 
-            return (
-              <div
-                key={day}
-                className="col border"
-                style={{ minHeight: "200px" }}
-              >
-                {medsForDay.length > 0 ? (
-                  medsForDay.map((med) =>
-                    med.times_per_day.map((time, i) => (
-                      <div
-                        key={`${med.id}-${time}-${i}`}
-                        className={`mb-2 p-2 rounded small ${
-                          isToday ? "bg-warning-subtle" : "bg-body-tertiary"
-                        }`}
-                      >
-                        <div>
-                          <strong>{med.medicine_name}</strong> – {med.strength}
-                        </div>
-                        <div>
-                          {time} – {med.amount} tablet(s)
-                        </div>
-                        {med.notes && (
-                          <div className="fst-italic small">{med.notes}</div>
-                        )}
-                        <div
-                          className={med.taken ? "text-success" : "text-danger"}
-                        >
-                          {med.taken ? "Taken" : "Not taken"}
-                        </div>
-                        {isToday && !med.taken && (
-                          <button
-                            className="btn btn-sm btn-outline-success mt-1"
-                            onClick={() => handleMarkAsTaken(med.id)}
-                          >
-                            Mark as Taken
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  )
+          return (
+            <div
+              key={index}
+              className="col-12 col-md border mb-3 mb-md-0"
+              style={{ minHeight: "180px" }}
+            >
+              {/* Header */}
+              <div className="fw-bold bg-light py-2 text-center border-bottom">
+                <span className={isToday ? "text-primary" : ""}>
+                  {daysOfWeek[index]} {formatDate(date)} {isToday && "(Today)"}
+                </span>
+              </div>
+
+              {/* Reminders */}
+              <div className="p-2">
+                {remindersForDay.length > 0 ? (
+                  remindersForDay.map((reminder) => (
+                    <ReminderButton key={reminder.id} reminder={reminder} refetch={refetch}/>
+                  ))
                 ) : (
-                  <div className="text-muted mt-3">No meds</div>
+                  <div className="text-muted small text-center">No reminders</div>
                 )}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
-    );
-  };
-
-  return <>{renderWeeklyCalendar()}</>;
+    </div>
+  );
 };
 
 export default Calendar;
