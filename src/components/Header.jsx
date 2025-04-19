@@ -10,7 +10,9 @@ const Header = () => {
   const handleLogOff = () => {
     localStorage.clear();
   };
-
+  const userData = localStorage.getItem("user");
+  const userPage ="/profile-page/" + JSON.parse(userData)?.id?.toString();
+  const caretakerPage = "/profile-page/" +JSON.parse(caretakerData)?.id?.toString();
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3 mx-4">
@@ -18,10 +20,28 @@ const Header = () => {
         <Link to="">
           <img src={logo} style={{ width: "100px", height: "auto" }} />
         </Link>
-
+        {/* User profile button*/}
+        {!urlPath.includes("/profile-page/:userId") && caretakerData && (
+            <Link
+              className="btn btn-info"
+              to={caretakerPage}
+              style={{ width: "200px" }}
+            >
+              My Profile
+            </Link>
+          )}
+            {!urlPath.includes("/profile-page/:userId") && !caretakerData && (
+            <Link
+              className="btn btn-info"
+              to={userPage}
+              style={{ width: "200px" }}
+            >
+              My Profile
+            </Link>
+          )}
         <div className="d-flex gap-4">
           {/* Go back to caretaker page */}
-          {!urlPath.includes("/caretaker-page") && caretakerData && (
+          {!urlPath.includes("/caretaker-page/") && caretakerData && (
             <Link
               className="btn btn-warning"
               to="/caretaker-page"
@@ -42,7 +62,7 @@ const Header = () => {
           )}
 
           {/* Schedules Button */}
-          {urlPath.includes("/medicine") && (
+          {(urlPath.includes("/medicine") || urlPath.includes("/profile-page")) && (
             <Link
               className="btn btn-primary"
               to="/schedule"

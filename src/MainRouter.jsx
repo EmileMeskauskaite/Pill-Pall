@@ -17,6 +17,7 @@ import CaretakerLogin from "./pages/Caretaker-login";
 import CaretakerRegister from "./pages/Caretaker-register";
 import CaretakerPage from "./pages/Caretaker-page";
 import ResetPassword from "./pages/ResetPassword-page";
+import ProfilePage from "./pages/Profile-page";
 import NoPage from "./pages/NoPage";
 
 const router = createBrowserRouter(
@@ -33,6 +34,7 @@ const router = createBrowserRouter(
       <Route path="/caretaker-page" element={<CaretakerPage />} />
       <Route path="/reset-password/:type/email" element={<ResetPassword />} />
       <Route path="/reset-password/:type/password" element={<ResetPassword />} />
+      <Route path="/profile-page/:userId" element={<ProfilePage />} />
       <Route path="/*" element={<NoPage />} />
     </>
   )
