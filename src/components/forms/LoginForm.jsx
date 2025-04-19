@@ -10,9 +10,9 @@ const LoginForm = (props) => {
     password: "",
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.clear();
-  },[])
+  }, []);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -88,16 +88,16 @@ const LoginForm = (props) => {
           ← Back
         </button>
 
-        {
-          (userType == "caretaker" ? (
-            <>
-            <h5 className="text-center border rounded p-3 bg-light">Easily monitor the medication intake of family members or clients!</h5>
+        {userType == "caretaker" ? (
+          <>
+            <h5 className="text-center border rounded p-3 bg-light">
+              Easily monitor the medication intake of family members or clients!
+            </h5>
             <h2 className="text-center mb-4">Caretaker Login</h2>
-            </>
-          ) : (
-            <h2 className="text-center mb-4">Login</h2>
-          ))
-        }
+          </>
+        ) : (
+          <h2 className="text-center mb-4">Login</h2>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Email</label>
@@ -127,7 +127,7 @@ const LoginForm = (props) => {
         </form>
         {userType == "caretaker" ? (
           <p className="text-center mt-3">
-            Don't have a caretaker account?{" "}
+            Don't have a caretaker account?
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/caretaker-register")}
@@ -137,7 +137,7 @@ const LoginForm = (props) => {
           </p>
         ) : (
           <p className="text-center mt-3">
-            Don't have an account?{" "}
+            Don't have an account?
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/register")}
@@ -146,6 +146,15 @@ const LoginForm = (props) => {
             </button>
           </p>
         )}
+        <p className="text-center mt-3">
+          Forgot password?
+          <button
+            className="btn btn-link p-0"
+            onClick={() => navigate(`/reset-password/${userType}/email`)}
+          >
+            Reset password here
+          </button>
+        </p>
       </div>
 
       {/* Error Modal */}
