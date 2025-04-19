@@ -128,7 +128,6 @@ const sendCaretakerConfirmation = async (req, res) => {
   try {
     user = await Users.getUserByEmail(userEmail);
     if (user == null) {
-      console.log("hello");
       return res.status(400).json({ error: "User with such email does not exist." });
     } else if (user.confirmed === false) {
       return res.status(400).json({ error: "This user has not confirmed their email yet." });

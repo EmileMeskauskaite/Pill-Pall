@@ -12,7 +12,7 @@ router.post("/request-password-reset", UsersController.requestPasswordReset);
 router.post("/reset-password", UsersController.resetPassword);
 
 router.get("/caretaker/:caretakerId/users", UsersController.getCaretakerUsers);
-router.post("/caretaker/add-user", UsersController.sendCaretakerConfirmation);
-router.delete("/caretaker/remove-user", UsersController.removeUserFromCaretaker)
+router.post("/:caretakerId/caretaker/add-user", UsersController.sendCaretakerConfirmation);
+router.delete("/:caretakerId/caretaker/remove-user", UsersController.removeUserFromCaretaker)
 router.get("/caretaker/user-data/:caretakerId/:userId", UsersController.getUserDataForCaretaker);
 module.exports = router;

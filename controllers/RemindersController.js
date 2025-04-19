@@ -29,10 +29,8 @@ module.exports = {
     try {
       const reminderData = req.body;
       const reminderId = await Reminders.createReminderRule(reminderData);
-      console.log("Created reminder with ID:", reminderId);
       
       const reminders = await Reminders.createReminders(reminderId, req.body.start_date, req.body.end_date, req.body.week_day);
-      console.log(req.body)
       res.status(201).json({ id: reminderId });
 
     } catch (err) {
@@ -138,14 +136,11 @@ module.exports = {
   },
 
   getRulesByMedicineId: async (req, res) => {
-    console.log("💥 HIT getRulesByMedicineId");
 
     try {
         const { medicineId } = req.params;
-        console.log("📦 medicineId from params:", medicineId);
 
         const rules = await Reminders.getRulesByMedicineId(medicineId);
-        console.log("📋 Rules found:", rules);
 
         res.status(200).json(rules);
     } catch (err) {

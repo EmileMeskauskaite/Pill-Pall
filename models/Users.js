@@ -6,7 +6,6 @@ require('dotenv').config();
 const SECRET = process.env.JWT_SECRET;
 
 const getTable = (type) => {
-  console.log(`Type: ${type}`); 
   if (type === 'caretaker') {return 'caretakers';}
     else {return 'users';}
 
