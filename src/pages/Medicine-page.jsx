@@ -81,6 +81,7 @@ const MedicinePage = () => {
       const response = await fetch(url, {
         method,
         headers: {
+          Authorization: `Bearer ${userData.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),

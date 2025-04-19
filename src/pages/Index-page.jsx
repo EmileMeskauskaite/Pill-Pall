@@ -5,11 +5,6 @@ import pillImage from '../assets/Pill_image.png';
 import { useNavigate } from 'react-router-dom';
 
 const MainPage = () => {
-
-    useEffect(()=>{
-    localStorage.clear();
-    },[])
-
     const navigate = useNavigate();
 
     return (

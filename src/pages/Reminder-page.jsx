@@ -33,7 +33,7 @@ const ReminderPage = () => {
             }
 
             const response = await fetch(
-                `http://localhost:5169/reminders/${medicineId}`,
+                `http://localhost:5169/${userData.id}/reminders/${medicineId}`,
                 {
                     method: "GET",
                     headers: {
@@ -82,7 +82,7 @@ const ReminderPage = () => {
         try {
             const url = editingReminder
                 ? `http://localhost:5169/${userData.id}/rules/${editingReminder.id}`
-                : `http://localhost:5169/rules`;
+                : `http://localhost:5169/${userData.id}/rules`;
 
             const method = editingReminder ? "PUT" : "POST";
 
@@ -90,6 +90,7 @@ const ReminderPage = () => {
                 method,
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${userData.token}`,
                 },
                 body: JSON.stringify({
                     ...formData,

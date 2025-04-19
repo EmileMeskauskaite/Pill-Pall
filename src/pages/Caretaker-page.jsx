@@ -50,6 +50,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${caretakerData.caretaker_token}`,
         },
       });
 
@@ -76,7 +77,7 @@ const CaretakerPage = () => {
 
   const onUnlink = async (userId) => {
     try {
-      const url = `http://localhost:5169/caretaker/remove-user`;
+      const url = `http://localhost:5169/${caretakerData.id}/caretaker/remove-user`;
 
       const method = "DELETE";
 
@@ -84,6 +85,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${caretakerData.caretaker_token}`,
         },
         body: JSON.stringify({ userId: userId, caretakerId: caretakerData.id }),
       });
@@ -121,6 +123,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${caretakerData.caretaker_token}`,
         },
       });
 
@@ -144,7 +147,7 @@ const CaretakerPage = () => {
       caretakerSurname: caretakerData.surname,
     };
     try {
-      const url = `http://localhost:5169/caretaker/add-user`;
+      const url = `http://localhost:5169/${caretakerData.id}/caretaker/add-user`;
 
       const method = "POST";
 
@@ -152,6 +155,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${caretakerData.caretaker_token}`,
         },
         body: JSON.stringify(preparedForm),
       });
