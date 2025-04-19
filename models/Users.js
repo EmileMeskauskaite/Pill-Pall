@@ -6,9 +6,10 @@ require('dotenv').config();
 const SECRET = process.env.JWT_SECRET;
 
 const getTable = (type) => {
-  if (type === 'user') return 'users';
-  if (type === 'caretaker') return 'caretakers';
-  throw new Error('Invalid type');
+  console.log(`Type: ${type}`); 
+  if (type === 'caretaker') {return 'caretakers';}
+    else {return 'users';}
+
 };
 
 module.exports = {
@@ -147,5 +148,30 @@ module.exports = {
     }
   
     return rows[0].confirmed === 1;
+  },
+
+  generatePasswordResetToken: (userId, type) => {
+    return jwt.sign({ userId, type }, SECRET, { expiresIn: '1h' });
+  },
+  
+  sendPasswordResetEmail: (email, token, transporter, type = 'user') => {
+    const resetUrl = `http://localhost:5173/reset-password/${type}/password?token=${token}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `<p>You requested a password reset. Click below to reset your password:</p>
+             <a href="${resetUrl}">${resetUrl}</a>`,
+    };
+    return transporter.sendMail(mailOptions);
+  },  
+  
+  updatePassword: async (userId, newPasswordHash, type = 'user') => {
+    const table = getTable(type);
+    const [result] = await db.query(
+      `UPDATE ${table} SET password = ? WHERE id = ?`,
+      [newPasswordHash, userId]
+    );
+    return result.affectedRows > 0;
   }
 };

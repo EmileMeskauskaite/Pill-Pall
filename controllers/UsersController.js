@@ -207,6 +207,43 @@ const getUserDataForCaretaker = async (req, res) => {
   }
 };
 
+const requestPasswordReset = async (req, res) => {
+  const { email, type = 'user' } = req.body;
+
+  try {
+    const user = await Users.getUserByEmail(email, type);
+    if (!user) return res.status(404).json({ error: "User not found." });
+
+    const token = Users.generatePasswordResetToken(user.id, type);
+    await Users.sendPasswordResetEmail(email, token, transporter, type);
+
+    res.json({ message: "Password reset email sent." });
+  } catch (err) {
+    console.error("Reset email error:", err);
+    res.status(500).json({ error: "Could not send password reset email." });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: "Token and new password are required." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const success = await Users.updatePassword(decoded.userId, hashedPassword, decoded.type);
+    if (!success) return res.status(404).json({ error: "User not found." });
+
+    res.json({ message: "Password has been updated." });
+  } catch (err) {
+    console.error("Password reset error:", err);
+    res.status(400).json({ error: "Invalid or expired token." });
+  }
+};
 
 module.exports = {
   registerUser: register("user"),
@@ -219,4 +256,6 @@ module.exports = {
   sendCaretakerConfirmation,
   confirmCaretakerUser,
   getUserDataForCaretaker,
+  requestPasswordReset,
+  resetPassword,
 };
