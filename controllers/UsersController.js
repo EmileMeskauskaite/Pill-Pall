@@ -244,6 +244,61 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const updateUser = (type = 'user') => async (req, res) => {
+  let id;
+  if (type === 'caretaker') {
+    const { caretakerId } = req.params;
+    id = caretakerId;
+  } else {
+    const { userId } = req.params;
+    id = userId;
+  }
+  const updateData = req.body;
+
+  if (updateData.date_of_birth) {
+    updateData.date_of_birth = new Date(updateData.date_of_birth);
+  }
+
+  if (!id || Object.keys(updateData).length === 0) {
+    return res.status(400).json({ error: "Missing ID or data to update." });
+  }
+
+  try {
+    const success = await Users.updateUser(id, updateData, type);
+    if (!success) return res.status(404).json({ error: "User not found." });
+
+    res.json({ message: "User updated successfully." });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ error: "Could not update user." });
+  }
+};
+
+const deleteUser = (type = 'user') => async (req, res) => {
+  let id;
+  if (type === 'caretaker') {
+    const {caretakerId} = req.params;
+    id=caretakerId;
+  }
+  else {
+    const {userId} = req.params;
+    id=userId;
+  }
+
+  if (!id) return res.status(400).json({ error: "Missing ID." });
+
+  try {
+    const success = await Users.deleteUser(id, type);
+    if (!success) return res.status(404).json({ error: "User not found." });
+
+    res.json({ message: "User deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({ error: "Could not delete user." });
+  }
+};
+
+
 module.exports = {
   registerUser: register("user"),
   registerCaretaker: register("caretaker"),
@@ -257,4 +312,8 @@ module.exports = {
   getUserDataForCaretaker,
   requestPasswordReset,
   resetPassword,
+  updateUser: updateUser("user"),
+  updateCaretaker: updateUser("caretaker"),
+  deleteUser: deleteUser("user"),
+  deleteCaretaker: deleteUser("caretaker"),
 };

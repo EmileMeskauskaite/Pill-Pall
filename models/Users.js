@@ -172,5 +172,26 @@ module.exports = {
       [newPasswordHash, userId]
     );
     return result.affectedRows > 0;
-  }
+  },
+
+updateUser: async (id, updateData, type = 'user') => {
+  const table = getTable(type);
+  const fields = Object.keys(updateData).map(key => `${key} = ?`).join(', ');
+  const values = Object.values(updateData);
+  console.log(values);
+  console.log(fields);
+  const [result] = await db.query(
+    `UPDATE ${table} SET ${fields} WHERE id = ?`,
+    [...values, id]
+  );
+
+  return result.affectedRows > 0;
+},
+
+deleteUser: async (id, type = 'user') => {
+  const table = getTable(type);
+  const [result] = await db.query(`DELETE FROM ${table} WHERE id = ?`, [id]);
+  return result.affectedRows > 0;
+},
+
 };
