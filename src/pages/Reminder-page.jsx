@@ -14,7 +14,7 @@ const ReminderPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [editingReminder, setEditingReminder] = useState(null);
 
-    const userData = JSON.parse(localStorage.getItem("user")); 
+    const userData = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
         if (!userData) {
@@ -31,9 +31,9 @@ const ReminderPage = () => {
                 console.warn("Missing user or medicine ID.");
                 return;
             }
-    
+
             const response = await fetch(
-                `http://localhost:5169/reminders/${medicineId}`, 
+                `http://localhost:5169/reminders/${medicineId}`,
                 {
                     method: "GET",
                     headers: {
@@ -42,22 +42,21 @@ const ReminderPage = () => {
                     },
                 }
             );
-    
+
             if (!response.ok) {
                 console.error("Failed to fetch reminders. Redirecting to 404.");
                 navigate("/404");
                 return;
             }
-    
+
             const data = await response.json();
             setReminders(data);
             return data;
-    
+
         } catch (err) {
             console.error("Error fetching reminders:", err);
         }
     };
-    
 
     const refetchReminders = () => {
         if (userData) {
@@ -82,7 +81,7 @@ const ReminderPage = () => {
     const handleFormSubmit = async (formData) => {
         try {
             const url = editingReminder
-                ? `http://localhost:5169/users/${userData.id}/rules/${editingReminder.id}`
+                ? `http://localhost:5169/${userData.id}/rules/${editingReminder.id}`
                 : `http://localhost:5169/rules`;
 
             const method = editingReminder ? "PUT" : "POST";
@@ -113,7 +112,17 @@ const ReminderPage = () => {
     };
 
     const handleEditButton = (reminder) => {
-        setEditingReminder(reminder);
+        const formatDate = (dateStr) => dateStr?.slice(0, 10) || "";
+        const formatTime = (timeStr) => timeStr?.slice(0, 5) || "";
+
+        const formattedReminder = {
+            ...reminder,
+            start_date: formatDate(reminder.start_date),
+            end_date: formatDate(reminder.end_date),
+            reminder_time: formatTime(reminder.reminder_time),
+        };
+
+        setEditingReminder(formattedReminder);
         setShowForm(true);
     };
 

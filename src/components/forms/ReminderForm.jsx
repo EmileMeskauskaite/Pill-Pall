@@ -4,14 +4,12 @@ const ReminderForm = (props) => {
     const { setFormData, formData, handleSubmit } = props;
 
     const defaultFormData = {
-        reminder_minutes_before: "",
+        reminder_minutes_before: "0",
         start_date: "",
         end_date: "",
         reminder_time: "",
         week_day: "",
     };
-
-    const mergedFormData = { ...defaultFormData, ...formData };
 
     useEffect(() => {
         if (!formData || Object.keys(formData).length === 0) {
@@ -19,20 +17,38 @@ const ReminderForm = (props) => {
         } else {
             const formatted = {
                 ...formData,
-                reminder_time: formData.reminder_time?.slice(0, 5) || "", // format just once
+                reminder_time: formData.reminder_time?.slice(0, 5) || "",
             };
             setFormData(formatted);
         }
     }, []);
-    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
+    };
+
+    const handleNumberChange = (e) => {
+        const { value, name } = e.target;
+
+        if (/^\d*$/.test(value)) {
+            const numericValue = parseInt(value);
+
+            if (name === "reminder_minutes_before") {
+                if (value === "" || (numericValue >= 0 && numericValue <= 60)) {
+                    handleChange(e);
+                } else {
+                    e.target.value = "";
+                }
+            } else {
+                handleChange(e);
+            }
+        } else {
+            e.target.value = "";
+        }
     };
 
     return (
@@ -45,9 +61,11 @@ const ReminderForm = (props) => {
                     type="number"
                     name="reminder_minutes_before"
                     className="form-control"
-                    value={mergedFormData.reminder_minutes_before}
-                    onChange={handleChange}
+                    value={formData.reminder_minutes_before || ""}
+                    onChange={handleNumberChange}
                     required
+                    min="0"
+                    max="60"
                 />
             </div>
 
@@ -57,7 +75,7 @@ const ReminderForm = (props) => {
                     type="date"
                     name="start_date"
                     className="form-control"
-                    value={mergedFormData.start_date}
+                    value={formData.start_date || ""}
                     onChange={handleChange}
                     required
                 />
@@ -69,7 +87,7 @@ const ReminderForm = (props) => {
                     type="date"
                     name="end_date"
                     className="form-control"
-                    value={mergedFormData.end_date}
+                    value={formData.end_date || ""}
                     onChange={handleChange}
                     required
                 />
@@ -81,7 +99,7 @@ const ReminderForm = (props) => {
                     type="time"
                     name="reminder_time"
                     className="form-control"
-                    value={mergedFormData.reminder_time}
+                    value={formData.reminder_time || ""}
                     onChange={handleChange}
                     required
                 />
@@ -92,7 +110,7 @@ const ReminderForm = (props) => {
                 <select
                     name="week_day"
                     className="form-control"
-                    value={mergedFormData.week_day}
+                    value={formData.week_day || ""}
                     onChange={handleChange}
                     required
                 >
