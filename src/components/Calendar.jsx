@@ -3,7 +3,6 @@ import ReminderButton from "./buttons/ReminderButton";
 
 const Calendar = (props) => {
   const { dateRange, reminders, refetch } = props;
-
   if (!dateRange?.start || !reminders) {
     return <div>Loading calendar...</div>;
   }

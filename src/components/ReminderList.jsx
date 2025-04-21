@@ -33,7 +33,7 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                         <th>End Date</th>
                         <th>Reminder Time</th>
                         <th>Week Day</th>
-                        <th>Edit</th>
+                        <th className="text-nowrap">Edit Item</th>
                         <th>Delete</th>
                     </tr>
                 </thead>

@@ -9,7 +9,7 @@ const UsersList = (props) => {
   const [selectedUser, setSelectedUser] = useState();
 
   if (!users) {
-    return <h2>Loading list</h2>;
+    return <h2>Add a user.</h2>;
   }
 
   const handleDelete = (userId) => {

@@ -50,7 +50,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${caretakerData.caretaker_token}`,
+          Authorization: `Bearer ${caretakerData.token}`,
         },
       });
 
@@ -85,7 +85,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${caretakerData.caretaker_token}`,
+          Authorization: `Bearer ${caretakerData.token}`,
         },
         body: JSON.stringify({ userId: userId, caretakerId: caretakerData.id }),
       });
@@ -122,7 +122,7 @@ const CaretakerPage = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${caretakerData.caretaker_token}`,
+          Authorization: `Bearer ${caretakerData.token}`,
         },
       });
 
@@ -147,18 +147,18 @@ const CaretakerPage = () => {
     };
     try {
       const url = `http://localhost:5169/${caretakerData.id}/caretaker/add-user`;
-
+      
       const method = "POST";
-
+      
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${caretakerData.caretaker_token}`,
+          Authorization: `Bearer ${caretakerData.token}`,
         },
         body: JSON.stringify(preparedForm),
       });
-
+      
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || "Something went wrong");

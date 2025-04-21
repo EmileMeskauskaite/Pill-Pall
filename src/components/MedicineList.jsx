@@ -13,7 +13,7 @@ const MedicineList = (props) => {
           <th>Amount</th>
           <th>Notes</th>
           <th>Reminder</th>
-          <th>Edit</th>
+          <th className="text-nowrap">Edit Item</th>
           <th>Delete</th>
         </tr>
       </thead>
@@ -32,7 +32,7 @@ const MedicineList = (props) => {
               </button>
               </td>
               <td>
-              <button className="btn btn-warning btn-sm" onClick={() => onEdit(e)}>
+              <button className="btn btn-warning btn-sm " onClick={() => onEdit(e)}>
                 <i className="bi bi-pencil-square"></i>
               </button>
               </td>
