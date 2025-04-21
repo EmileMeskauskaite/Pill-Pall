@@ -39,7 +39,7 @@ const ReminderModal = (props) => {
   const updateReminderTakenStatus = async (reminderId, takenStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:5169/${reminderId}/reminders`,
+        `http://localhost:5169/${userData.id}/${reminderId}/reminders`,
         {
           method: "PUT",
           headers: {

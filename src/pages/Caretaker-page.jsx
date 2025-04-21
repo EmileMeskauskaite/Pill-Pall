@@ -107,8 +107,7 @@ const CaretakerPage = () => {
       alert("User hasn't been confirmed");
     } else {
       const userData = await fetchUserData(userId);
-      localStorage.setItem("token", userData.token);
-      localStorage.setItem("user", JSON.stringify(userData.user));
+      localStorage.setItem("user", JSON.stringify({ ...userData.user, token: userData.token }));
       navigate('/schedule')
     }
   };

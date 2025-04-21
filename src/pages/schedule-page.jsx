@@ -6,7 +6,6 @@ import CalendarTimeButtons from "../components/buttons/CalendarTimeButtons";
 import SuccessNotification from "../components/notifications/SuccessNotification";
 
 const SchedulePage = () => {
-  const token = localStorage.getItem("token");
   const userData = JSON.parse(localStorage.getItem("user"));
   const [userName, setUserName] = useState();
   const [reminders, setReminders] = useState();
@@ -63,7 +62,7 @@ const SchedulePage = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userData.token}`,
           },
         }
       );

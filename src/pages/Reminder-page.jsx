@@ -108,7 +108,7 @@ const ReminderPage = () => {
             refetchReminders();
             handleCloseForm();
         } catch (err) {
-            console.log(err.message || "Failed to submit form.");
+            console.error(err.message || "Failed to submit form.");
         }
     };
 

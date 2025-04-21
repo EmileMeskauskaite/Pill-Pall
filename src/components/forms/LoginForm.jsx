@@ -41,8 +41,12 @@ const LoginForm = (props) => {
 
         const userData = await response.json();
 
-        localStorage.setItem("caretaker_token", userData.token);
-        localStorage.setItem("caretaker", JSON.stringify(userData.user));
+        const userWithToken = {
+          ...userData.user,
+          token: userData.token
+        };
+        
+        localStorage.setItem("caretaker", JSON.stringify(userWithToken));
         navigate("/caretaker-page");
       } catch (error) {
         setErrorMessage(error.message);
@@ -65,8 +69,12 @@ const LoginForm = (props) => {
 
         const userData = await response.json();
 
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData.user));
+        const userWithToken = {
+          ...userData.user,
+          token: userData.token
+        };
+        
+        localStorage.setItem("user", JSON.stringify(userWithToken));
         navigate("/schedule");
       } catch (error) {
         setErrorMessage(error.message);
