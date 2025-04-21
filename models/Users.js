@@ -178,8 +178,7 @@ updateUser: async (id, updateData, type = 'user') => {
   const table = getTable(type);
   const fields = Object.keys(updateData).map(key => `${key} = ?`).join(', ');
   const values = Object.values(updateData);
-  console.log(values);
-  console.log(fields);
+
   const [result] = await db.query(
     `UPDATE ${table} SET ${fields} WHERE id = ?`,
     [...values, id]

@@ -53,6 +53,8 @@ module.exports = {
         return res
           .status(404)
           .json({ error: "Reminder not found or not updated." });
+      await Reminders.deleteRemindersByRuleId(req.body.id);
+      await Reminders.createReminders(req.body.id, req.body.start_date, req.body.end_date, req.body.week_day);
       res.status(200).json({ message: "Reminder updated." });
     } catch (err) {
       console.error(err);
@@ -144,7 +146,7 @@ module.exports = {
 
         res.status(200).json(rules);
     } catch (err) {
-        console.error("❌ Error in getRulesByMedicineId:", err);
+        console.error(" Error in getRulesByMedicineId:", err);
         res.status(500).json({ error: "Error retrieving rules." });
     }
 }

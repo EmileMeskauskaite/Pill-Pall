@@ -1,17 +1,18 @@
 const express = require("express");
 const RemindersController = require("../controllers/RemindersController");
-
+const tokenVerification = require("../tokenVerification");
+const { verify } = require("jsonwebtoken");
 const router = express.Router();
 
-router.get("/:userId/rules", RemindersController.getAllRules);
-router.get("/:userId/rules/:reminderId", RemindersController.getOneRule);
-router.put("/:userId/rules/:reminderId", RemindersController.updateRule);
-router.delete("/:userId/rules/:reminderId", RemindersController.deleteRule);
-router.delete("/:userId/rules", RemindersController.deleteMultipleRules);
-router.post("/:userId/rules", RemindersController.createRule);
+router.get("/:userId/rules", tokenVerification.verifyUser, RemindersController.getAllRules);
+router.get("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.getOneRule);
+router.put("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.updateRule);
+router.delete("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.deleteRule);
+router.delete("/:userId/rules", tokenVerification.verifyUser, RemindersController.deleteMultipleRules);
+router.post("/:userId/rules", tokenVerification.verifyUser, RemindersController.createRule);
 
 // Actual reminders
-router.get("/:userId/reminders", RemindersController.getAllReminders);
-router.put("/:userId/:reminderId/reminders", RemindersController.updateTakenStatus);
-router.get("/:userId/reminders/:medicineId", RemindersController.getRulesByMedicineId);   
+router.get("/:userId/reminders", tokenVerification.verifyUser, RemindersController.getAllReminders);
+router.put("/:userId/:reminderId/reminders", tokenVerification.verifyUser, RemindersController.updateTakenStatus);
+router.get("/:userId/reminders/:medicineId", tokenVerification.verifyUser, RemindersController.getRulesByMedicineId);   
 module.exports = router;

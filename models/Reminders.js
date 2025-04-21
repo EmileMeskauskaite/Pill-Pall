@@ -30,6 +30,7 @@ module.exports = {
   },
 
   updateReminderRule: async (userId, reminderId, updateData) => {
+    console.log(updateData)
     const [result] = await db.query(
       `UPDATE reminder_rules SET ? WHERE id = ? AND user_id = ?`,
       [updateData, reminderId, userId]
@@ -98,6 +99,7 @@ module.exports = {
     }
   },
 
+  
   createReminders: async (reminder_rules_id, startDate, endDate, weekDay) => {
     try {
       const remindersToInsert = [];
@@ -106,7 +108,10 @@ module.exports = {
 
       while (current <= end) {
         if (current.getDay() == weekDay) {
-          const formattedDate = current.toISOString().split("T")[0]; // YYYY-MM-DD
+          const year = current.getFullYear();
+          const month = String(current.getMonth() + 1).padStart(2, "0");
+          const day = String(current.getDate()).padStart(2, "0");
+          const formattedDate = `${year}-${month}-${day}`;
           remindersToInsert.push([formattedDate, reminder_rules_id]);
         }
         current.setDate(current.getDate() + 1);
@@ -127,14 +132,34 @@ module.exports = {
       throw new Error("Could not create reminders.");
     }
   },
+  
 
   getRulesByMedicineId: async (medicineId) => {
     const [reminderRules] = await db.query(
-        "SELECT * FROM reminder_rules WHERE medicine_id = ?",
-        [medicineId]
+      `SELECT 
+      id, medicine_id, user_id, reminder_minutes_before,
+      DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+      DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date,
+      reminder_time, week_day
+    FROM reminder_rules
+    WHERE medicine_id = ?`,
+      [medicineId]
     );
     return reminderRules;
-}
+  },
+
+deleteRemindersByRuleId: async (reminderRuleId) => {
+  try {
+    const [result] = await db.query(
+      "DELETE FROM reminders WHERE reminder_rules_id = ?",
+      [reminderRuleId]
+    );
+    return result.affectedRows;
+  } catch (err) {
+    console.error("Error deleting reminders by rule ID:", err);
+    throw new Error("Could not delete reminders for the given rule.");
+  }
+},
 
 
 };
