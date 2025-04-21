@@ -161,5 +161,22 @@ deleteRemindersByRuleId: async (reminderRuleId) => {
   }
 },
 
+getMedicineNameByReminderId: async (reminderId) => {
+  try {
+    const [result] = await db.query(
+      `SELECT m.medicine_name
+       FROM reminders r
+       JOIN reminder_rules rr ON r.reminder_rules_id = rr.id
+       JOIN medicines m ON rr.medicine_id = m.id
+       WHERE r.id = ?`,
+      [reminderId]
+    );
+    return result.length > 0 ? result[0].medicine_name : null;
+  } catch (err) {
+    console.error("Error fetching medicine name:", err);
+    throw new Error("Could not fetch medicine name.");
+  }
+},
+
 
 };

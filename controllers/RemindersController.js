@@ -149,8 +149,21 @@ module.exports = {
         console.error(" Error in getRulesByMedicineId:", err);
         res.status(500).json({ error: "Error retrieving rules." });
     }
-}
+},
 
+getMedicineNameFromReminderId: async (req, res) => {
+  try {
+    const { reminderId } = req.params;
+    const name = await Reminders.getMedicineNameByReminderId(reminderId);
+    if (!name) {
+      return res.status(404).json({ error: "Medicine not found for given reminder." });
+    }
+    res.status(200).json({ medicine_name: name });
+  } catch (err) {
+    console.error("Error in getMedicineNameFromReminderId:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+},
 
 
 };

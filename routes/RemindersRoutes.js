@@ -12,6 +12,7 @@ router.delete("/:userId/rules", tokenVerification.verifyUser, RemindersControlle
 router.post("/:userId/rules", tokenVerification.verifyUser, RemindersController.createRule);
 
 // Actual reminders
+router.get("/:userId/reminder/:reminderId/medicine-name", tokenVerification.verifyUser, RemindersController.getMedicineNameFromReminderId);
 router.get("/:userId/reminders", tokenVerification.verifyUser, RemindersController.getAllReminders);
 router.put("/:userId/:reminderId/reminders", tokenVerification.verifyUser, RemindersController.updateTakenStatus);
 router.get("/:userId/reminders/:medicineId", tokenVerification.verifyUser, RemindersController.getRulesByMedicineId);   
