@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
+import SuccessNotification from '../components/notifications/SuccessNotification';
+
 
 const ProfilePage = () => {
     let userData;
     let userType;
-
+const [successShow, setSuccessShow] = useState(false);
     if (localStorage.getItem('caretaker')) {
         userData = JSON.parse(localStorage.getItem('caretaker'));
         userType = 'caretaker';
@@ -29,7 +31,7 @@ const ProfilePage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
+        const token = userData.token;
         if (!token) {
             alert('Authentication token is missing');
             return;
@@ -52,15 +54,19 @@ const ProfilePage = () => {
             if (!response.ok) {
                 throw new Error(`Failed to update ${userType} profile`);
             }
-            alert(`${userType.charAt(0).toUpperCase() + userType.slice(1)} profile updated successfully`);
+            handleSuccessNotification();
         } catch (error) {
             console.error(error);
             alert('An error occurred while updating the profile');
         }
     };
-
+    const handleSuccessNotification = () => {
+        setSuccessShow(true);
+        setTimeout(() => setSuccessShow(false), 3100);
+      };
+    
     const handleDelete = async () => {
-        const token = localStorage.getItem('token');
+        const token = userData.token;
         if (!token) {
             alert('Authentication token is missing');
             return;
@@ -81,7 +87,6 @@ const ProfilePage = () => {
             if (!response.ok) {
                 throw new Error(`Failed to delete ${userType} profile`);
             }
-            alert(`${userType.charAt(0).toUpperCase() + userType.slice(1)} profile deleted successfully`);
             localStorage.clear();
             window.location.href = '/';
         } catch (error) {
@@ -93,6 +98,7 @@ const ProfilePage = () => {
     return (
         <>
             <Header />
+            {successShow && <SuccessNotification />}
             <div
                 className="d-flex justify-content-center align-items-start bg-light"
                 style={{ minHeight: '100vh', paddingTop: '80px' }}

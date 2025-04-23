@@ -186,8 +186,8 @@ const CaretakerPage = () => {
         />
       )}
 
-      <h1>Hello {caretakerData.name}</h1>
-      <div className="d-flex justify-content-between">
+      <h1 className="text-center">Hello {caretakerData.name}</h1>
+      <div className="d-flex justify-content-between m-3">
         <button
           className="btn btn-success"
           style={{ width: "6em" }}
@@ -199,7 +199,7 @@ const CaretakerPage = () => {
         </button>
 
         <button
-          className="btn btn-primary"
+          className="btn btn-primary "
           style={{ width: "6em" }}
           onClick={refetchUsers}
         >
