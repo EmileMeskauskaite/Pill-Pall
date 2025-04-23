@@ -146,7 +146,7 @@ const ReminderPage = () => {
             <div>
                 <button
                     style={{ width: "15em" }}
-                    className="btn btn-success"
+                    className="btn btn-success mx-3"
                     onClick={handleCreateButton}
                 >
                     Create New Reminder

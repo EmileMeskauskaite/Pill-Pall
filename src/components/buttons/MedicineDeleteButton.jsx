@@ -5,7 +5,7 @@ import ConfirmNotification from "../notifications/ConfirmNotification";
 
 const MedicineDeleteButton = (props) => {
   const navigate = useNavigate();
-  const { medicineId, refetch, handleSuccess } = props;
+  const { medicineId, refetch, handleSuccess, className } = props;
   const userData = JSON.parse(localStorage.getItem("user"));
   const [showWarning, setShowWarning] = useState(false);
 
@@ -49,7 +49,7 @@ const MedicineDeleteButton = (props) => {
   return (
     <>
       {showWarning && <ConfirmNotification onConfirm={handleConfirm} onCancel={handleCancel}/>}
-      <button className="btn btn-danger btn-sm" onClick={handleClick}>
+      <button className={className || "btn btn-danger"} onClick={handleClick}>
         <i className="bi bi-trash"></i>
       </button>
     </>

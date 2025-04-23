@@ -122,7 +122,7 @@ const handleReminderButton = (medicineId) => {
       <div>
         <button
           style={{ width: "15em" }}
-          className="btn btn-success"
+          className="btn btn-success mx-3"
           onClick={handleCreateButton}
         >
           Create New Medicine
@@ -132,10 +132,40 @@ const handleReminderButton = (medicineId) => {
         <div>There are no medicines created.</div>
       ) : (
         <MedicineList
+          className="medicine-list-container"
           onSuccessChange={handleSuccessNotification}
           medicines={medicines}
           refetch={refetchMedicines}
           onEdit={handleEditButton}
+          cardLayout={true}
+          mobileBreakpoint={576}
+          styleConfig={{
+            colors: {
+              primary: '#2196F3',
+              secondary: '#FFC107', 
+              background: '#f5f5f5',
+              text: '#333333'
+            },
+            spacing: {
+              base: 8,
+              card: 16,
+              button: 12
+            },
+            borderRadius: '8px',
+            typography: {
+              fontFamily: '"Roboto", sans-serif',
+              fontSize: {
+                xs: '0.75rem',    // 12px
+                sm: '0.875rem',   // 14px
+                base: '1rem',     // 16px
+                lg: '1.125rem',   // 18px
+                xl: '1.25rem',    // 20px
+                '2xl': '1.5rem',  // 24px
+                '3xl': '1.875rem',  // 30px
+                '4xl': '2.25rem'  // 36px
+              }
+            }
+          }}
           onReminder={handleReminderButton}
         />
       )}

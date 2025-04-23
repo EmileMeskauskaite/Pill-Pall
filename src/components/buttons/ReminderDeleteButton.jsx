@@ -5,7 +5,7 @@ import ConfirmNotification from "../notifications/ConfirmNotification";
 
 const ReminderDeleteButton = (props) => {
     const navigate = useNavigate();
-    const { reminderId, refetch, handleSuccess } = props;
+    const { reminderId, refetch, handleSuccess, className } = props;
     const userData = JSON.parse(localStorage.getItem("user"));
     const [showWarning, setShowWarning] = useState(false);
 
@@ -50,7 +50,7 @@ const ReminderDeleteButton = (props) => {
     return (
         <>
             {showWarning && <ConfirmNotification onConfirm={handleConfirm} onCancel={handleCancel} />}
-            <button className="btn btn-danger btn-sm" onClick={handleClick}>
+            <button className={className || "btn btn-danger"} onClick={handleClick}>
                 <i className="bi bi-trash"></i>
             </button>
         </>

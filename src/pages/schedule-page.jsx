@@ -11,7 +11,9 @@ const SchedulePage = () => {
   const [reminders, setReminders] = useState();
   const [dateRange, setDateRange] = useState();
   const [successShow, setSuccessShow] = useState(false);
-
+  const caretakerData = JSON.parse(
+    localStorage.getItem("caretaker")
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,7 +84,9 @@ const SchedulePage = () => {
     <>
       <Header />
       {successShow && <SuccessNotification />}
-      <h1 className="text-center">Welcome, {userName}</h1>
+      
+      {!caretakerData && <h1 className="text-center">Welcome, {userName}</h1>}
+      {caretakerData && <h1 className="text-center"> {userName}'s schedule </h1>}  
       <div className="container py-4">
         <h2 className="text-center mb-4"></h2>
         <h3 className="text-center mb-4">Weekly Pill Calendar</h3>
