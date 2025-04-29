@@ -3,39 +3,119 @@ const db = require("../db");
 module.exports = {
   getAllReminderRulesForUser: async (userId) => {
     const [reminderRules] = await db.query("SELECT * FROM reminder_rules WHERE user_id = ?", [userId]);
+    
+    for (let rule of reminderRules) {
+      const [weekDays] = await db.query(
+        "SELECT week_day FROM reminder_week_days WHERE reminder_rule_id = ?",
+        [rule.id]
+      );
+      rule.week_days = weekDays.map(day => day.week_day);
+    }
+    
     return reminderRules;
   },
 
   getReminderRuleById: async (userId, reminderId) => {
     const [results] = await db.query("SELECT * FROM reminder_rules WHERE user_id = ? AND id = ?", [userId, reminderId]);
-    return results.length > 0 ? results[0] : null;
+    
+    if (results.length === 0) return null;
+    
+    const [weekDays] = await db.query(
+      "SELECT week_day FROM reminder_week_days WHERE reminder_rule_id = ?",
+      [reminderId]
+    );
+    
+    const rule = results[0];
+    rule.week_days = weekDays.map(day => day.week_day);
+    
+    return rule;
   },
 
   createReminderRule: async (reminderData) => {
     const {
       medicine_id, user_id, reminder_id, send_email_reminder, taken,
-      reminder_minutes_before, start_date, end_date, reminder_time, week_day
+      reminder_minutes_before, start_date, end_date, reminder_time, week_day, week_days
     } = reminderData;
 
-    const [result] = await db.query(
-      `INSERT INTO reminder_rules
-      (medicine_id, user_id, reminder_minutes_before, 
-      start_date, end_date, reminder_time, week_day)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [medicine_id, user_id,reminder_minutes_before, 
-        start_date, end_date, reminder_time, week_day]
-    );
-
-    return result.insertId;
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+    
+    try {
+      const [result] = await connection.query(
+        `INSERT INTO reminder_rules
+        (medicine_id, user_id, reminder_minutes_before, 
+        start_date, end_date, reminder_time)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [medicine_id, user_id, reminder_minutes_before, 
+          start_date, end_date, reminder_time]
+      );
+      
+      const reminderRuleId = result.insertId;
+      
+      if (week_days && Array.isArray(week_days) && week_days.length > 0) {
+        const weekDaysValues = week_days.map(day => [reminderRuleId, day]);
+        await connection.query(
+          "INSERT INTO reminder_week_days (reminder_rule_id, week_day) VALUES ?",
+          [weekDaysValues]
+        );
+      } else if (week_day) {
+        await connection.query(
+          "INSERT INTO reminder_week_days (reminder_rule_id, week_day) VALUES (?, ?)",
+          [reminderRuleId, week_day]
+        );
+      }
+      
+      await connection.commit();
+      return reminderRuleId;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   },
 
   updateReminderRule: async (userId, reminderId, updateData) => {
     console.log(updateData)
-    const [result] = await db.query(
-      `UPDATE reminder_rules SET ? WHERE id = ? AND user_id = ?`,
-      [updateData, reminderId, userId]
-    );
-    return result.affectedRows > 0;
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+    
+    try {
+      const { week_days, ...ruleData } = updateData;
+      
+      const [result] = await connection.query(
+        `UPDATE reminder_rules SET ? WHERE id = ? AND user_id = ?`,
+        [ruleData, reminderId, userId]
+      );
+      
+      if (result.affectedRows === 0) {
+        await connection.rollback();
+        return false;
+      }
+      
+      if (week_days && Array.isArray(week_days)) {
+        await connection.query(
+          "DELETE FROM reminder_week_days WHERE reminder_rule_id = ?",
+          [reminderId]
+        );
+        
+        if (week_days.length > 0) {
+          const weekDaysValues = week_days.map(day => [reminderId, day]);
+          await connection.query(
+            "INSERT INTO reminder_week_days (reminder_rule_id, week_day) VALUES ?",
+            [weekDaysValues]
+          );
+        }
+      }
+      
+      await connection.commit();
+      return true;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   },
 
   deleteReminderRule: async (userId, reminderId) => {
@@ -99,15 +179,18 @@ module.exports = {
     }
   },
 
-  
-  createReminders: async (reminder_rules_id, startDate, endDate, weekDay) => {
+  createReminders: async (reminder_rules_id, startDate, endDate, weekDays) => {
     try {
       const remindersToInsert = [];
       let current = new Date(startDate);
       const end = new Date(endDate);
 
+      if (typeof weekDays === 'string' || typeof weekDays === 'number') {
+        weekDays = [weekDays];
+      }
+
       while (current <= end) {
-        if (current.getDay() == weekDay) {
+        if (weekDays.includes(current.getDay().toString())) {
           const year = current.getFullYear();
           const month = String(current.getMonth() + 1).padStart(2, "0");
           const day = String(current.getDate()).padStart(2, "0");
@@ -140,43 +223,50 @@ module.exports = {
       id, medicine_id, user_id, reminder_minutes_before,
       DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
       DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date,
-      reminder_time, week_day
+      reminder_time
     FROM reminder_rules
     WHERE medicine_id = ?`,
       [medicineId]
     );
+    
+    for (let rule of reminderRules) {
+      const [weekDays] = await db.query(
+        "SELECT week_day FROM reminder_week_days WHERE reminder_rule_id = ?",
+        [rule.id]
+      );
+      rule.week_days = weekDays.map(day => day.week_day);
+    }
+    
     return reminderRules;
   },
 
-deleteRemindersByRuleId: async (reminderRuleId) => {
-  try {
-    const [result] = await db.query(
-      "DELETE FROM reminders WHERE reminder_rules_id = ?",
-      [reminderRuleId]
-    );
-    return result.affectedRows;
-  } catch (err) {
-    console.error("Error deleting reminders by rule ID:", err);
-    throw new Error("Could not delete reminders for the given rule.");
-  }
-},
+  deleteRemindersByRuleId: async (reminderRuleId) => {
+    try {
+      const [result] = await db.query(
+        "DELETE FROM reminders WHERE reminder_rules_id = ?",
+        [reminderRuleId]
+      );
+      return result.affectedRows;
+    } catch (err) {
+      console.error("Error deleting reminders by rule ID:", err);
+      throw new Error("Could not delete reminders for the given rule.");
+    }
+  },
 
-getMedicineNameByReminderId: async (reminderId) => {
-  try {
-    const [result] = await db.query(
-      `SELECT m.medicine_name
-       FROM reminders r
-       JOIN reminder_rules rr ON r.reminder_rules_id = rr.id
-       JOIN medicines m ON rr.medicine_id = m.id
-       WHERE r.id = ?`,
-      [reminderId]
-    );
-    return result.length > 0 ? result[0].medicine_name : null;
-  } catch (err) {
-    console.error("Error fetching medicine name:", err);
-    throw new Error("Could not fetch medicine name.");
-  }
-},
-
-
+  getMedicineNameByReminderId: async (reminderId) => {
+    try {
+      const [result] = await db.query(
+        `SELECT m.medicine_name
+         FROM reminders r
+         JOIN reminder_rules rr ON r.reminder_rules_id = rr.id
+         JOIN medicines m ON rr.medicine_id = m.id
+         WHERE r.id = ?`,
+        [reminderId]
+      );
+      return result.length > 0 ? result[0].medicine_name : null;
+    } catch (err) {
+      console.error("Error fetching medicine name:", err);
+      throw new Error("Could not fetch medicine name.");
+    }
+  },
 };

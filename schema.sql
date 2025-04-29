@@ -42,9 +42,14 @@ CREATE TABLE IF NOT EXISTS reminder_rules (
   start_date DATE,
   end_date DATE,
   reminder_time TIME,
-  week_day INT,
   FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS reminder_week_days (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reminder_rule_id INT NOT NULL,
+  week_day INT NOT NULL,
+  FOREIGN KEY (reminder_rule_id) REFERENCES reminder_rules(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS reminders (
   id INT AUTO_INCREMENT PRIMARY KEY,

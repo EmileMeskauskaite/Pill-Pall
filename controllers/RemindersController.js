@@ -28,13 +28,27 @@ module.exports = {
   createRule: async (req, res) => {
     try {
       const reminderData = req.body;
-      const reminderId = await Reminders.createReminderRule(reminderData);
       
-      const reminders = await Reminders.createReminders(reminderId, req.body.start_date, req.body.end_date, req.body.week_day);
+      // Extract week_days from the request
+      const weekDays = reminderData.week_days || (reminderData.week_day ? [reminderData.week_day] : []);
+      
+      // Create the reminder rule
+      const reminderId = await Reminders.createReminderRule({
+        ...reminderData,
+        week_days: weekDays
+      });
+      
+      // Create reminders for each week day
+      const reminders = await Reminders.createReminders(
+        reminderId, 
+        req.body.start_date, 
+        req.body.end_date, 
+        weekDays
+      );
+      
       res.status(201).json({ id: reminderId });
 
     } catch (err) {
-      
       console.error(err);
       res.status(500).json({ error: "Error creating reminder." });
     }
@@ -44,17 +58,34 @@ module.exports = {
   updateRule: async (req, res) => {
     try {
       const { userId, reminderId } = req.params;
+      
+      // Extract week_days from the request
+      const weekDays = req.body.week_days || (req.body.week_day ? [req.body.week_day] : []);
+      
+      // Update the reminder rule
       const updated = await Reminders.updateReminderRule(
         userId,
         reminderId,
-        req.body
+        {
+          ...req.body,
+          week_days: weekDays
+        }
       );
+      
       if (!updated)
         return res
           .status(404)
           .json({ error: "Reminder not found or not updated." });
+      
+      // Delete existing reminders and create new ones
       await Reminders.deleteRemindersByRuleId(req.body.id);
-      await Reminders.createReminders(req.body.id, req.body.start_date, req.body.end_date, req.body.week_day);
+      await Reminders.createReminders(
+        req.body.id, 
+        req.body.start_date, 
+        req.body.end_date, 
+        weekDays
+      );
+      
       res.status(200).json({ message: "Reminder updated." });
     } catch (err) {
       console.error(err);
@@ -138,32 +169,27 @@ module.exports = {
   },
 
   getRulesByMedicineId: async (req, res) => {
-
     try {
-        const { medicineId } = req.params;
-
-        const rules = await Reminders.getRulesByMedicineId(medicineId);
-
-        res.status(200).json(rules);
+      const { medicineId } = req.params;
+      const rules = await Reminders.getRulesByMedicineId(medicineId);
+      res.status(200).json(rules);
     } catch (err) {
-        console.error(" Error in getRulesByMedicineId:", err);
-        res.status(500).json({ error: "Error retrieving rules." });
+      console.error(" Error in getRulesByMedicineId:", err);
+      res.status(500).json({ error: "Error retrieving rules." });
     }
-},
+  },
 
-getMedicineNameFromReminderId: async (req, res) => {
-  try {
-    const { reminderId } = req.params;
-    const name = await Reminders.getMedicineNameByReminderId(reminderId);
-    if (!name) {
-      return res.status(404).json({ error: "Medicine not found for given reminder." });
+  getMedicineNameFromReminderId: async (req, res) => {
+    try {
+      const { reminderId } = req.params;
+      const name = await Reminders.getMedicineNameByReminderId(reminderId);
+      if (!name) {
+        return res.status(404).json({ error: "Medicine not found for given reminder." });
+      }
+      res.status(200).json({ medicine_name: name });
+    } catch (err) {
+      console.error("Error in getMedicineNameFromReminderId:", err);
+      res.status(500).json({ error: "Internal server error." });
     }
-    res.status(200).json({ medicine_name: name });
-  } catch (err) {
-    console.error("Error in getMedicineNameFromReminderId:", err);
-    res.status(500).json({ error: "Internal server error." });
-  }
-},
-
-
+  },
 };
