@@ -30,7 +30,6 @@ const MedicineForm = (props) => {
   };
 
   const handleNumberChange = (e) => {
-    console.log('YES');
     const { value, name } = e.target;
 
     if (/^\d*$/.test(value)) {
@@ -61,12 +60,16 @@ const MedicineForm = (props) => {
     }
   };
 
+  const isEditing = formData && formData.id;
+
   return (
     <form onSubmit={handleSubmit}>
-      <h4 className="mb-3">Add New Medicine</h4>
+      <h4 className="mb-3">
+        {isEditing ? "Pakeisti egzistuojantį vaistą" : "Pridėti naują vaistą"}
+      </h4>
 
       <div className="mb-2">
-        <label>Medicine Name</label>
+        <label>Vaisto pavadinimas</label>
         <input
           type="text"
           name="medicine_name"
@@ -78,7 +81,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Strength</label>
+        <label>Stiprumas</label>
         <input
           type="text"
           name="strength"
@@ -86,16 +89,16 @@ const MedicineForm = (props) => {
           value={mergedFormData.strength}
           onChange={handleChange}
           required
-          placeholder="e.g. 200mg"
+          placeholder="pvz. 200mg"
         />
       </div>
 
       <div className="mb-2">
-        <label>Amount (tablets per dose)</label>
+        <label>Kiekis (tabletės vienai dozei)</label>
         <input
           type="int"
           name="amount"
-          placeholder="e.g.: 5"
+          placeholder="pvz.: 5"
           className="form-control"
           value={mergedFormData.amount}
           onChange={handleNumberChange}
@@ -104,7 +107,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Notes</label>
+        <label>Pastabos</label>
         <input
           type="text"
           name="notes"
@@ -114,7 +117,9 @@ const MedicineForm = (props) => {
         />
       </div>
 
-      <button type="submit" className="btn btn-success">Submit</button>
+      <button type="submit" className="btn btn-success">
+        {isEditing ? "Atnaujinti" : "Išsaugoti"}
+      </button>
     </form>
   );
 };

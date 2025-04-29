@@ -21,7 +21,7 @@ const CaretakerPage = () => {
         const caretakerDataParsed = JSON.parse(storedData);
         setCaretakerData(caretakerDataParsed);
       } catch (err) {
-        console.error("Error parsing caretaker data:", err);
+        console.error("Klaida analizuojant prižiūrėtojo duomenis:", err);
         navigate("/caretaker-login");
       }
     } else {
@@ -55,14 +55,14 @@ const CaretakerPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Įvyko klaida");
       } else {
         const data = await response.json();
         console.log(data);
         return data;
       }
     } catch (err) {
-      console.log(err.message || "Failed to submit form.");
+      console.log(err.message || "Nepavyko pateikti formos.");
     }
   };
 
@@ -92,19 +92,19 @@ const CaretakerPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Įvyko klaida");
       } else {
         handleSuccessNotification();
         refetchUsers();
       }
     } catch (err) {
-      console.log(err.message || "Failed to delete.");
+      console.log(err.message || "Nepavyko ištrinti.");
     }
   };
 
   const onUserClick = async (userId, confirmed) => {
     if (!confirmed) {
-      alert("User hasn't been confirmed");
+      alert("Vartotojas nepatvirtintas");
     } else {
       const userData = await fetchUserData(userId);
       localStorage.setItem("user", JSON.stringify({ ...userData.user, token: userData.token }));
@@ -128,13 +128,13 @@ const CaretakerPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Įvyko klaida");
       } else {
         const data = await response.json();
         return data;
       }
     } catch (err) {
-      console.log(err.message || "Failed to fetch user data");
+      console.log(err.message || "Nepavyko gauti vartotojo duomenų");
     }
   };
 
@@ -161,14 +161,14 @@ const CaretakerPage = () => {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Įvyko klaida");
       } else {
         handleSuccessNotification();
         handleCloseForm();
         refetchUsers();
       }
     } catch (err) {
-      console.log(err.message || "Failed to submit form.");
+      console.log(err.message || "Nepavyko pateikti formos.");
     }
   };
 
@@ -186,7 +186,7 @@ const CaretakerPage = () => {
         />
       )}
 
-      <h1 className="text-center">Hello {caretakerData.name}</h1>
+      <h1 className="text-center">Labas, {caretakerData.name}</h1>
       <div className="d-flex justify-content-between m-3">
         <button
           className="btn btn-success"
@@ -195,7 +195,7 @@ const CaretakerPage = () => {
             setShowForm(true);
           }}
         >
-          Add User To Monitor
+          Pridėti vartotoją stebėti
         </button>
 
         <button
@@ -203,7 +203,7 @@ const CaretakerPage = () => {
           style={{ width: "6em" }}
           onClick={refetchUsers}
         >
-          Refresh List 🔃
+          Atnaujinti sąrašą 🔃
         </button>
       </div>
       <UsersList users={users} onUnlink={onUnlink} onUserClick={onUserClick} />

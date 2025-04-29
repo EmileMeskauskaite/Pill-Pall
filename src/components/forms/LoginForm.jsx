@@ -36,7 +36,7 @@ const LoginForm = (props) => {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || "Failed to login");
+          throw new Error(data.message || "Nepavyko prisijungti");
         }
 
         const userData = await response.json();
@@ -64,7 +64,7 @@ const LoginForm = (props) => {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || "Failed to login");
+          throw new Error(data.message || "Nepavyko prisijungti");
         }
 
         const userData = await response.json();
@@ -93,22 +93,22 @@ const LoginForm = (props) => {
         className="p-4 rounded shadow position-relative"
       >
         <button className="btn-light mb-2" onClick={() => navigate("/")}>
-          ← Back
+          ← Grįžti
         </button>
 
         {userType == "caretaker" ? (
           <>
             <h5 className="text-center border rounded p-3 bg-light">
-              Easily monitor the medication intake of family members or clients!
+              Lengvai stebėkite šeimos narių ar klientų vaistų vartojimą!
             </h5>
-            <h2 className="text-center mb-4">Caretaker Login</h2>
+            <h2 className="text-center mb-4">Prižiūrėtojo prisijungimas</h2>
           </>
         ) : (
-          <h2 className="text-center mb-4">Login</h2>
+          <h2 className="text-center mb-4">Prisijungimas</h2>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label">El. paštas</label>
             <input
               type="email"
               name="email"
@@ -119,7 +119,7 @@ const LoginForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label">Slaptažodis</label>
             <input
               type="password"
               name="password"
@@ -130,37 +130,37 @@ const LoginForm = (props) => {
             />
           </div>
           <button type="submit" className="btn btn-success w-100">
-            Log in
+            Prisijungti
           </button>
         </form>
         {userType == "caretaker" ? (
           <p className="text-center mt-3">
-            Don't have a caretaker account?
+            Neturite prižiūrėtojo paskyros?
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/caretaker-register")}
             >
-              Register one here
+              Registruokitės čia
             </button>
           </p>
         ) : (
           <p className="text-center mt-3">
-            Don't have an account?
+            Neturite paskyros?
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/register")}
             >
-              Register here
+              Registruokitės čia
             </button>
           </p>
         )}
         <p className="text-center mt-3">
-          Forgot password?
+          Pamiršote slaptažodį?
           <button
             className="btn btn-link p-0"
             onClick={() => navigate(`/reset-password/${userType}/email`)}
           >
-            Reset password here
+            Atstatykite slaptažodį čia
           </button>
         </p>
       </div>
@@ -175,7 +175,7 @@ const LoginForm = (props) => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title text-danger">Login Failed</h5>
+                <h5 className="modal-title text-danger">Nepavyko prisijungti</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -191,7 +191,7 @@ const LoginForm = (props) => {
                   className="btn btn-secondary"
                   onClick={() => setShowErrorModal(false)}
                 >
-                  Close
+                  Uždaryti
                 </button>
               </div>
             </div>

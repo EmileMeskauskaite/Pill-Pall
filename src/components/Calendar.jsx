@@ -4,17 +4,17 @@ import ReminderButton from "./buttons/ReminderButton";
 const Calendar = (props) => {
   const { dateRange, reminders, refetch } = props;
   if (!dateRange?.start || !reminders) {
-    return <div>Loading calendar...</div>;
+    return <div>Kraunamas kalendorius...</div>;
   }
 
   const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    "Pirmadienis",
+    "Antradienis",
+    "Trečiadienis",
+    "Ketvirtadienis",
+    "Penktadienis",
+    "Šeštadienis",
+    "Sekmadienis",
   ];
 
   const today = new Date();
@@ -65,7 +65,7 @@ const Calendar = (props) => {
               {/* Header */}
               <div className="fw-bold bg-light py-2 text-center border-bottom">
                 <span className={isToday ? "text-primary" : ""}>
-                  {daysOfWeek[index]} {formatDate(date)} {isToday && "(Today)"}
+                  {daysOfWeek[index]} {formatDate(date)} {isToday && "(Šiandien)"}
                 </span>
               </div>
 
@@ -76,7 +76,7 @@ const Calendar = (props) => {
                     <ReminderButton key={reminder.id} reminder={reminder} refetch={refetch}/>
                   ))
                 ) : (
-                  <div className="text-muted small text-center">No reminders</div>
+                  <div className="text-muted small text-center">Nėra priminimų</div>
                 )}
               </div>
             </div>

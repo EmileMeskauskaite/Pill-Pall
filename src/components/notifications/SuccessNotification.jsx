@@ -17,7 +17,7 @@ const SuccessNotification = (props) => {
 
   return (
     <div className="success-toast alert alert-success">
-      {customMessage ? <p>{customMessage}</p> : <p>✅ Change Successful!</p>}
+      {customMessage ? <p>{customMessage}</p> : <p>✅ Pakeitimai sėkmingai išsaugoti!</p>}
     </div>
   );
 };

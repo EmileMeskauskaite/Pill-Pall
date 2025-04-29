@@ -26,7 +26,7 @@ const CreateMedicinePage = () => {
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
 
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const daysOfWeek = ['Pirmadienis', 'Antradienis', 'Trečiadienis', 'Ketvirtadienis', 'Penktadienis', 'Šeštadienis', 'Sekmadienis'];
 
     const handleFormChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -84,44 +84,44 @@ const CreateMedicinePage = () => {
             if (response.ok) {
                 navigate('/');
             } else {
-                console.error('Failed to create medicine');
+                console.error('Nepavyko sukurti vaisto');
             }
         } catch (err) {
-            console.error('Error:', err);
+            console.error('Klaida:', err);
         }
     };
 
     return (
         <div className="container py-4">
-            <h3 className="mb-4">Add New Medicine</h3>
+            <h3 className="mb-4">Pridėti naują vaistą</h3>
             <form onSubmit={handleFormSubmit} className="border p-3 rounded bg-light">
                 <div className="mb-2">
-                    <label>Medicine Name</label>
+                    <label>Vaisto pavadinimas</label>
                     <input type="text" name="medicine_name" className="form-control" value={newMedicine.medicine_name} onChange={handleFormChange} required />
                 </div>
                 <div className="mb-2">
-                    <label>Strength (e.g. 200mg)</label>
+                    <label>Stiprumas (pvz. 200mg)</label>
                     <input type="text" name="strength" className="form-control" value={newMedicine.strength} onChange={handleFormChange} required />
                 </div>
                 <div className="mb-2">
-                    <label>Amount (tablets per dose)</label>
+                    <label>Kiekis (tabletės vienai dozei)</label>
                     <input type="int" name="amount" className="form-control" onChange={handleNumberChange} />
                 </div>
                 <div className="mb-2">
-                    <label>Time</label>
-                    <input type="int" name="hour" placeholder="Hour (0-23)" className="form-control" maxLength="2" onChange={handleNumberChange} />
-                    <input type="int" name="minute" placeholder="Minute (0-59)" className="form-control mt-1" maxLength="2" onChange={handleNumberChange} />
+                    <label>Laikas</label>
+                    <input type="int" name="hour" placeholder="Valanda (0-23)" className="form-control" maxLength="2" onChange={handleNumberChange} />
+                    <input type="int" name="minute" placeholder="Minutės (0-59)" className="form-control mt-1" maxLength="2" onChange={handleNumberChange} />
                 </div>
                 <div className="mb-2">
-                    <label>Start Date</label>
+                    <label>Pradžios data</label>
                     <input type="date" name="start_date" className="form-control" value={newMedicine.start_date} onChange={handleFormChange} required />
                 </div>
                 <div className="mb-2">
-                    <label>End Date</label>
+                    <label>Pabaigos data</label>
                     <input type="date" name="end_date" className="form-control" value={newMedicine.end_date} onChange={handleFormChange} required />
                 </div>
                 <div className="mb-2">
-                    <label>Days of the Week</label>
+                    <label>Savaitės dienos</label>
                     <div className="d-flex flex-wrap gap-2">
                         {daysOfWeek.map(day => (
                             <div key={day}>
@@ -131,18 +131,18 @@ const CreateMedicinePage = () => {
                     </div>
                 </div>
                 <div className="mb-2">
-                    <label>Notes</label>
+                    <label>Pastabos</label>
                     <input type="text" name="notes" className="form-control" value={newMedicine.notes} onChange={handleFormChange} />
                 </div>
                 <div className="mb-2">
-                    <label>Send Email Reminder?</label>
+                    <label>Siųsti el. paštu priminimą?</label>
                     <input type="checkbox" name="send_email_reminder" checked={newMedicine.send_email_reminder} onChange={handleFormChange} />
                 </div>
                 <div className="mb-2">
-                    <label>Reminder Before (minutes)</label>
+                    <label>Priminti prieš (minutėmis)</label>
                     <input type="number" name="reminder_minutes_before" className="form-control" value={newMedicine.reminder_minutes_before} onChange={handleFormChange} />
                 </div>
-                <button type="submit" className="btn btn-success mt-2">Save Medicine</button>
+                <button type="submit" className="btn btn-success mt-2">Išsaugoti vaistą</button>
             </form>
         </div>
     );

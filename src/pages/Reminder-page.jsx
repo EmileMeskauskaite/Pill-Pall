@@ -28,7 +28,7 @@ const ReminderPage = () => {
     const fetchReminders = async () => {
         try {
             if (!userData || !medicineId) {
-                console.warn("Missing user or medicine ID.");
+                console.warn("Trūksta vartotojo arba vaisto ID.");
                 return;
             }
 
@@ -44,7 +44,7 @@ const ReminderPage = () => {
             );
 
             if (!response.ok) {
-                console.error("Failed to fetch reminders. Redirecting to 404.");
+                console.error("Nepavyko gauti priminimų. Nukreipiama į 404.");
                 navigate("/404");
                 return;
             }
@@ -54,7 +54,7 @@ const ReminderPage = () => {
             return data;
 
         } catch (err) {
-            console.error("Error fetching reminders:", err);
+            console.error("Klaida gaunant priminimus:", err);
         }
     };
 
@@ -80,35 +80,41 @@ const ReminderPage = () => {
 
     const handleFormSubmit = async (formData) => {
         try {
-            const url = editingReminder
-                ? `http://localhost:5169/${userData.id}/rules/${editingReminder.id}`
-                : `http://localhost:5169/${userData.id}/rules`;
+            // Check if formData is an array (multiple reminders) or a single object
+            const remindersToSubmit = Array.isArray(formData) ? formData : [formData];
+            
+            // Process each reminder
+            for (const reminder of remindersToSubmit) {
+                const url = editingReminder
+                    ? `http://localhost:5169/${userData.id}/rules/${editingReminder.id}`
+                    : `http://localhost:5169/${userData.id}/rules`;
 
-            const method = editingReminder ? "PUT" : "POST";
+                const method = editingReminder ? "PUT" : "POST";
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${userData.token}`,
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    medicine_id: medicineId,
-                    user_id: userData.id,
-                }),
-            });
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${userData.token}`,
+                    },
+                    body: JSON.stringify({
+                        ...reminder,
+                        medicine_id: medicineId,
+                        user_id: userData.id,
+                    }),
+                });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || "Something went wrong");
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || "Įvyko klaida");
+                }
             }
 
             handleSuccessNotification();
             refetchReminders();
             handleCloseForm();
         } catch (err) {
-            console.error(err.message || "Failed to submit form.");
+            console.error(err.message || "Nepavyko pateikti formos.");
         }
     };
 
@@ -149,11 +155,11 @@ const ReminderPage = () => {
                     className="btn btn-success mx-3"
                     onClick={handleCreateButton}
                 >
-                    Create New Reminder
+                    Sukurti naują priminimą
                 </button>
             </div>
             {reminders.length === 0 ? (
-                <div>There are no reminders created.</div>
+                <div>Nėra sukurtų priminimų.</div>
             ) : (
                 <ReminderList
                     onSuccessChange={handleSuccessNotification}

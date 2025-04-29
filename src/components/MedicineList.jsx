@@ -14,23 +14,23 @@ const MedicineList = (props) => {
                 <div className="card-body">
                   <h5 className="card-title">{medicine.medicine_name}</h5>
                   <div className="card-text">
-                    <p><strong>Strength:</strong> {medicine.strength}</p>
-                    <p><strong>Amount:</strong> {medicine.amount}</p>
-                    {medicine.notes && <p><strong>Notes:</strong> {medicine.notes}</p>}
+                    <p><strong>Stiprumas:</strong> {medicine.strength}</p>
+                    <p><strong>Kiekis:</strong> {medicine.amount}</p>
+                    {medicine.notes && <p><strong>Pastabos:</strong> {medicine.notes}</p>}
                   </div>
                   <div className="d-flex justify-content-between align-items-center mt-3">
                     <div className="btn-group w-100">
                       <button 
                         className="btn btn-primary flex-grow-1 py-2" 
                         onClick={() => onReminder(medicine.id)}
-                        title="Set Reminder"
+                        title="Nustatyti priminimą"
                       >
                         ⏰
                       </button>
                       <button 
                         className="btn btn-warning flex-grow-1 py-2" 
                         onClick={() => onEdit(medicine)}
-                        title="Edit"
+                        title="Redaguoti"
                       >
                         <i className="bi bi-pencil-square"></i>
                       </button>
@@ -56,14 +56,14 @@ const MedicineList = (props) => {
         <table className="table table-striped table-bordered table-hover table-sm text-center">
           <thead>
             <tr>
-              <th>No.</th>
-              <th>Medicine Name</th>
-              <th>Strength</th>
-              <th>Amount</th>
-              <th>Notes</th>
-              <th>Reminder</th>
-              <th className="text-nowrap">Edit Item</th>
-              <th>Delete</th>
+              <th>Nr.</th>
+              <th>Vaisto pavadinimas</th>
+              <th>Stiprumas</th>
+              <th>Kiekis</th>
+              <th>Pastabos</th>
+              <th>Priminimas</th>
+              <th className="text-nowrap">Redaguoti</th>
+              <th>Ištrinti</th>
             </tr>
           </thead>
           <tbody>
@@ -78,7 +78,7 @@ const MedicineList = (props) => {
                   <button 
                     className="btn btn-primary py-2" 
                     onClick={() => onReminder(medicine.id)}
-                    title="Set Reminder"
+                    title="Nustatyti priminimą"
                   >
                     ⏰
                   </button>
@@ -87,7 +87,7 @@ const MedicineList = (props) => {
                   <button 
                     className="btn btn-warning py-2" 
                     onClick={() => onEdit(medicine)}
-                    title="Edit"
+                    title="Redaguoti"
                   >
                     <i className="bi bi-pencil-square"></i>
                   </button>

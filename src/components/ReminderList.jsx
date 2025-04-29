@@ -5,16 +5,27 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         const date = new Date(dateStr);
-        return date.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     };
 
     const formatWeekday = (dayNumber) => {
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const days = ["Sekmadienis", "Pirmadienis", "Antradienis", "Trečiadienis", "Ketvirtadienis", "Penktadienis", "Šeštadienis"];
         return days[dayNumber] ?? "";
+    };
+
+    const formatWeekDays = (weekDays) => {
+        if (!weekDays) return "";
+        
+        // If weekDays is a string or number, convert it to an array
+        const days = Array.isArray(weekDays) ? weekDays : [weekDays];
+        
+        if (days.length === 0) return "";
+        
+        // Format each day and join with commas
+        return days.map(day => formatWeekday(day)).join(", ");
     };
 
     const formatTime = (timeStr) => {
@@ -31,20 +42,20 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                         <div key={reminder.id} className="col">
                             <div className="card h-100 shadow-sm">
                                 <div className="card-body">
-                                    <h5 className="card-title">Reminder #{index + 1}</h5>
+                                    <h5 className="card-title">Priminimas #{index + 1}</h5>
                                     <div className="card-text">
-                                        <p><strong>Minutes Before:</strong> {reminder.reminder_minutes_before}</p>
-                                        <p><strong>Start Date:</strong> {formatDate(reminder.start_date)}</p>
-                                        <p><strong>End Date:</strong> {formatDate(reminder.end_date)}</p>
-                                        <p><strong>Time:</strong> {formatTime(reminder.reminder_time)}</p>
-                                        <p><strong>Day:</strong> {formatWeekday(reminder.week_day)}</p>
+                                        <p><strong>Minutės prieš:</strong> {reminder.reminder_minutes_before}</p>
+                                        <p><strong>Pradžios data:</strong> {formatDate(reminder.start_date)}</p>
+                                        <p><strong>Pabaigos data:</strong> {formatDate(reminder.end_date)}</p>
+                                        <p><strong>Laikas:</strong> {formatTime(reminder.reminder_time)}</p>
+                                        <p><strong>Savaitės dienos:</strong> {formatWeekDays(reminder.week_days || reminder.week_day)}</p>
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mt-3">
                                         <div className="btn-group w-100">
                                             <button 
                                                 className="btn btn-warning flex-grow-1 py-2" 
                                                 onClick={() => onEdit(reminder)}
-                                                title="Edit"
+                                                title="Redaguoti"
                                             >
                                                 <i className="bi bi-pencil-square"></i>
                                             </button>
@@ -71,14 +82,14 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                     <table className="table table-striped table-bordered table-hover table-sm text-center align-middle">
                         <thead className="table-light">
                             <tr>
-                                <th>No.</th>
-                                <th>Reminder Minutes Before</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Reminder Time</th>
-                                <th>Week Day</th>
-                                <th className="text-nowrap">Edit Item</th>
-                                <th>Delete</th>
+                                <th>Nr.</th>
+                                <th>Minutės prieš</th>
+                                <th>Pradžios data</th>
+                                <th>Pabaigos data</th>
+                                <th>Priminimo laikas</th>
+                                <th>Savaitės dienos</th>
+                                <th className="text-nowrap">Redaguoti</th>
+                                <th>Ištrinti</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,12 +100,12 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                                     <td>{formatDate(reminder.start_date)}</td>
                                     <td>{formatDate(reminder.end_date)}</td>
                                     <td>{formatTime(reminder.reminder_time)}</td>
-                                    <td>{formatWeekday(reminder.week_day)}</td>
+                                    <td>{formatWeekDays(reminder.week_days || reminder.week_day)}</td>
                                     <td>
                                         <button
                                             className="btn btn-warning py-2"
                                             onClick={() => onEdit(reminder)}
-                                            title="Edit"
+                                            title="Redaguoti"
                                         >
                                             <i className="bi bi-pencil-square"></i>
                                         </button>

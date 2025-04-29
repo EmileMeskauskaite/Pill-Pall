@@ -44,8 +44,7 @@ const MedicinePage = () => {
         return parsed;
       }
     } catch (err) {
-      console.error("Could not fetch, has the server started?");
-      // navigate("/");
+      console.error("Nepavyko gauti duomenų, ar serveris paleistas?");
     }
   };
 
@@ -89,14 +88,14 @@ const MedicinePage = () => {
   
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || "Įvyko klaida");
       }
   
       handleSuccessNotification();
       refetchMedicines();
       handleCloseForm();
     } catch (err) {
-      console.log(err.message || "Failed to submit form.");
+      console.log(err.message || "Nepavyko pateikti formos.");
     }
   };
 
@@ -104,9 +103,11 @@ const MedicinePage = () => {
     setEditingMedicine(medicine);
     setShowForm(true);
   };
-const handleReminderButton = (medicineId) => {
-  navigate(`/reminder/${medicineId}`);
-}
+
+  const handleReminderButton = (medicineId) => {
+    navigate(`/reminder/${medicineId}`);
+  }
+
   return (
     <>
       <Header />
@@ -125,11 +126,11 @@ const handleReminderButton = (medicineId) => {
           className="btn btn-success mx-3"
           onClick={handleCreateButton}
         >
-          Create New Medicine
+          Sukurti naują vaistą
         </button>
       </div>
       {medicines.length === 0 ? (
-        <div>There are no medicines created.</div>
+        <div>Nėra sukurtų vaistų.</div>
       ) : (
         <MedicineList
           className="medicine-list-container"

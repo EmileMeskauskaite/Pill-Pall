@@ -13,9 +13,8 @@ const FormModal = (props) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    submitFunction(formData);
+  const handleSubmit = async (data) => {
+    submitFunction(data);
   }
 
   return (
@@ -29,7 +28,7 @@ const FormModal = (props) => {
             }}
             onClick={closeModal}
           >
-            Cancel
+            Atšaukti
           </button>
         </div>
         <div
