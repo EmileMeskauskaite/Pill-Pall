@@ -17,15 +17,8 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
     };
 
     const formatWeekDays = (weekDays) => {
-        if (!weekDays) return "";
-        
-        // If weekDays is a string or number, convert it to an array
-        const days = Array.isArray(weekDays) ? weekDays : [weekDays];
-        
-        if (days.length === 0) return "";
-        
-        // Format each day and join with commas
-        return days.map(day => formatWeekday(day)).join(", ");
+        if (!weekDays || !Array.isArray(weekDays)) return "";
+        return weekDays.map(day => formatWeekday(day)).join(", ");
     };
 
     const formatTime = (timeStr) => {
@@ -48,7 +41,7 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                                         <p><strong>Pradžios data:</strong> {formatDate(reminder.start_date)}</p>
                                         <p><strong>Pabaigos data:</strong> {formatDate(reminder.end_date)}</p>
                                         <p><strong>Laikas:</strong> {formatTime(reminder.reminder_time)}</p>
-                                        <p><strong>Savaitės dienos:</strong> {formatWeekDays(reminder.week_days || reminder.week_day)}</p>
+                                        <p><strong>Savaitės dienos:</strong> {formatWeekDays(reminder.week_days)}</p>
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mt-3">
                                         <div className="btn-group w-100">
@@ -100,7 +93,7 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                                     <td>{formatDate(reminder.start_date)}</td>
                                     <td>{formatDate(reminder.end_date)}</td>
                                     <td>{formatTime(reminder.reminder_time)}</td>
-                                    <td>{formatWeekDays(reminder.week_days || reminder.week_day)}</td>
+                                    <td>{formatWeekDays(reminder.week_days)}</td>
                                     <td>
                                         <button
                                             className="btn btn-warning py-2"

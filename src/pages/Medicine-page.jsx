@@ -83,7 +83,12 @@ const MedicinePage = () => {
           Authorization: `Bearer ${userData.token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          medicine_name: formData.medicine_name,
+          strength: formData.strength,
+          amount: parseInt(formData.amount),
+          notes: formData.notes || ""
+        }),
       });
   
       if (!response.ok) {
@@ -95,7 +100,7 @@ const MedicinePage = () => {
       refetchMedicines();
       handleCloseForm();
     } catch (err) {
-      console.log(err.message || "Nepavyko pateikti formos.");
+      console.error(err.message || "Nepavyko pateikti formos.");
     }
   };
 
