@@ -102,7 +102,11 @@ const MedicinePage = () => {
       handleCloseForm();
     } catch (err) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       console.error(err.message || "Nepavyko pateikti formos.");
+=======
+      console.log(err.message || "Failed to submit form.");
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
 =======
       console.log(err.message || "Failed to submit form.");
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)

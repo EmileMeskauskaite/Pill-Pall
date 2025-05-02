@@ -18,11 +18,14 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     const formatWeekDays = (weekDays) => {
         if (!weekDays || !Array.isArray(weekDays)) return "";
         return weekDays.map(day => formatWeekday(day)).join(", ");
     };
 
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
 =======
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
     const formatTime = (timeStr) => {
@@ -42,17 +45,23 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                                     <h5 className="card-title">Reminder #{index + 1}</h5>
                                     <div className="card-text">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         <p><strong>Minutės prieš:</strong> {reminder.reminder_minutes_before}</p>
                                         <p><strong>Pradžios data:</strong> {formatDate(reminder.start_date)}</p>
                                         <p><strong>Pabaigos data:</strong> {formatDate(reminder.end_date)}</p>
                                         <p><strong>Laikas:</strong> {formatTime(reminder.reminder_time)}</p>
                                         <p><strong>Savaitės dienos:</strong> {formatWeekDays(reminder.week_days)}</p>
 =======
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
                                         <p><strong>Minutes Before:</strong> {reminder.reminder_minutes_before}</p>
                                         <p><strong>Start Date:</strong> {formatDate(reminder.start_date)}</p>
                                         <p><strong>End Date:</strong> {formatDate(reminder.end_date)}</p>
                                         <p><strong>Time:</strong> {formatTime(reminder.reminder_time)}</p>
                                         <p><strong>Day:</strong> {formatWeekday(reminder.week_day)}</p>
+<<<<<<< HEAD
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
+=======
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mt-3">
@@ -106,7 +115,11 @@ const ReminderList = ({ reminders, refetch, onSuccessChange, onEdit, onReminder 
                                     <td>{formatDate(reminder.end_date)}</td>
                                     <td>{formatTime(reminder.reminder_time)}</td>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     <td>{formatWeekDays(reminder.week_days)}</td>
+=======
+                                    <td>{formatWeekday(reminder.week_day)}</td>
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
 =======
                                     <td>{formatWeekday(reminder.week_day)}</td>
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)

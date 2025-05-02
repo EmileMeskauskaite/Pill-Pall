@@ -29,8 +29,11 @@ const ReminderForm = (props) => {
         week_days: formData.week_days || [formData.week_day].filter(Boolean),
       };
 <<<<<<< HEAD
+<<<<<<< HEAD
       setFormData(formatted);
       setSelectedDays(formatted.week_days || []);
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
 =======
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
     }
@@ -62,6 +65,7 @@ const ReminderForm = (props) => {
     }
   };
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   const handleDayChange = (dayValue) => {
     let updatedDays;
@@ -104,6 +108,8 @@ const ReminderForm = (props) => {
     { id: "6", name: "Šeštadienis" }
   ];
 
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
 =======
 >>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
   return (
@@ -163,6 +169,7 @@ const ReminderForm = (props) => {
 
       <div className="mb-4">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <label className="form-label fw-semibold">Savaitės dienos</label>
         <div className="d-flex flex-wrap gap-3">
           {weekDays.map(day => (
@@ -207,6 +214,27 @@ const ReminderForm = (props) => {
         </select>
       </div>
 
+=======
+        <label className="form-label fw-semibold">Week Day</label>
+        <select
+          name="week_day"
+          className="form-control"
+          value={formData.week_day || ""}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select a day</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+          <option value="0">Sunday</option>
+        </select>
+      </div>
+
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
       <button type="submit" className="btn btn-success w-100">
         Submit
       </button>

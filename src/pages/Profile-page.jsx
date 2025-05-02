@@ -226,6 +226,7 @@ const [successShow, setSuccessShow] = useState(false);
 
                         <button type="submit" className="btn btn-success w-100 mb-2">
                             Submit
+<<<<<<< HEAD
                         </button>
                         <button
                             type="button"
@@ -233,6 +234,8 @@ const [successShow, setSuccessShow] = useState(false);
                             onClick={() => setShowPasswordModal(true)}
                         >
                             Keisti slaptažodį
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
                         </button>
                         <button
                             type="button"
