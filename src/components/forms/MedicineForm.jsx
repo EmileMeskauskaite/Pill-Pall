@@ -30,6 +30,7 @@ const MedicineForm = (props) => {
   };
 
   const handleNumberChange = (e) => {
+    console.log('YES');
     const { value, name } = e.target;
 
     if (/^\d*$/.test(value)) {
@@ -60,16 +61,12 @@ const MedicineForm = (props) => {
     }
   };
 
-  const isEditing = formData && formData.id;
-
   return (
     <form onSubmit={handleSubmit}>
-      <h4 className="mb-3">
-        {isEditing ? "Pakeisti egzistuojantį vaistą" : "Pridėti naują vaistą"}
-      </h4>
+      <h4 className="mb-3">Add New Medicine</h4>
 
       <div className="mb-2">
-        <label>Vaisto pavadinimas</label>
+        <label>Medicine Name</label>
         <input
           type="text"
           name="medicine_name"
@@ -81,7 +78,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Stiprumas</label>
+        <label>Strength</label>
         <input
           type="text"
           name="strength"
@@ -89,16 +86,16 @@ const MedicineForm = (props) => {
           value={mergedFormData.strength}
           onChange={handleChange}
           required
-          placeholder="pvz. 200mg"
+          placeholder="e.g. 200mg"
         />
       </div>
 
       <div className="mb-2">
-        <label>Kiekis (tabletės vienai dozei)</label>
+        <label>Amount (tablets per dose)</label>
         <input
           type="int"
           name="amount"
-          placeholder="pvz.: 5"
+          placeholder="e.g.: 5"
           className="form-control"
           value={mergedFormData.amount}
           onChange={handleNumberChange}
@@ -107,7 +104,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Pastabos</label>
+        <label>Notes</label>
         <input
           type="text"
           name="notes"
@@ -117,9 +114,7 @@ const MedicineForm = (props) => {
         />
       </div>
 
-      <button type="submit" className="btn btn-success">
-        {isEditing ? "Atnaujinti" : "Išsaugoti"}
-      </button>
+      <button type="submit" className="btn btn-success">Submit</button>
     </form>
   );
 };

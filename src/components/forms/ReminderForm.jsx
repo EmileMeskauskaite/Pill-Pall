@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const ReminderForm = (props) => {
   const { setFormData, formData, handleSubmit } = props;
-  const [selectedDays, setSelectedDays] = useState([]);
 
   function getFormattedCurrentDate() {
     const today = new Date();
@@ -17,7 +16,7 @@ const ReminderForm = (props) => {
     start_date: getFormattedCurrentDate(),
     end_date: getFormattedCurrentDate(),
     reminder_time: "12:00",
-    week_days: [],
+    week_day: "",
   };
 
   useEffect(() => {
@@ -29,8 +28,11 @@ const ReminderForm = (props) => {
         reminder_time: formData.reminder_time?.slice(0, 5) || "",
         week_days: formData.week_days || [formData.week_day].filter(Boolean),
       };
+<<<<<<< HEAD
       setFormData(formatted);
       setSelectedDays(formatted.week_days || []);
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
     }
   }, []);
 
@@ -60,6 +62,7 @@ const ReminderForm = (props) => {
     }
   };
 
+<<<<<<< HEAD
   const handleDayChange = (dayValue) => {
     let updatedDays;
     if (selectedDays.includes(dayValue)) {
@@ -101,14 +104,14 @@ const ReminderForm = (props) => {
     { id: "6", name: "Šeštadienis" }
   ];
 
+=======
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
   return (
-    <form onSubmit={handleFormSubmit} className="p-3">
-      <h4 className="text-center mb-4">
-        {isEditing ? "Pakeisti egzistuojantį priminimą" : "Pridėti naują priminimą"}
-      </h4>
+    <form onSubmit={handleSubmit} className="p-3">
+      <h4 className="text-center mb-4">Add New Reminder</h4>
       <div className="mb-3">
         <label className="form-label fw-semibold">
-          Minutės prieš priminimą
+          Reminder Minutes Before
         </label>
         <input
           type="number"
@@ -123,7 +126,7 @@ const ReminderForm = (props) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label fw-semibold">Pradžios data</label>
+        <label className="form-label fw-semibold">Start Date</label>
         <input
           type="date"
           name="start_date"
@@ -135,7 +138,7 @@ const ReminderForm = (props) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label fw-semibold">Pabaigos data</label>
+        <label className="form-label fw-semibold">End Date</label>
         <input
           type="date"
           name="end_date"
@@ -147,7 +150,7 @@ const ReminderForm = (props) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label fw-semibold">Priminimo laikas</label>
+        <label className="form-label fw-semibold">Reminder Time</label>
         <input
           type="time"
           name="reminder_time"
@@ -159,6 +162,7 @@ const ReminderForm = (props) => {
       </div>
 
       <div className="mb-4">
+<<<<<<< HEAD
         <label className="form-label fw-semibold">Savaitės dienos</label>
         <div className="d-flex flex-wrap gap-3">
           {weekDays.map(day => (
@@ -183,6 +187,30 @@ const ReminderForm = (props) => {
           {isEditing ? "Išsaugoti pakeitimus" : "Pridėti priminimą"}
         </button>
       </div>
+=======
+        <label className="form-label fw-semibold">Week Day</label>
+        <select
+          name="week_day"
+          className="form-control"
+          value={formData.week_day || ""}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select a day</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+          <option value="0">Sunday</option>
+        </select>
+      </div>
+
+      <button type="submit" className="btn btn-success w-100">
+        Submit
+      </button>
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
     </form>
   );
 };

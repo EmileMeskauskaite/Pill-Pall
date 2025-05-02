@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import SuccessNotification from '../components/notifications/SuccessNotification';
-import { useNavigate } from 'react-router-dom';
 
 
 const ProfilePage = () => {
     let userData;
     let userType;
-    const [successShow, setSuccessShow] = useState(false);
-    const navigate = useNavigate();
-    
+const [successShow, setSuccessShow] = useState(false);
     if (localStorage.getItem('caretaker')) {
         userData = JSON.parse(localStorage.getItem('caretaker'));
         userType = 'caretaker';
@@ -57,7 +54,7 @@ const ProfilePage = () => {
         e.preventDefault();
         const token = userData.token;
         if (!token) {
-            alert('Trūksta autentifikacijos rakto');
+            alert('Authentication token is missing');
             return;
         }
 
@@ -76,12 +73,12 @@ const ProfilePage = () => {
                 body: JSON.stringify(formData),
             });
             if (!response.ok) {
-                throw new Error(`Nepavyko atnaujinti ${userType} profilio`);
+                throw new Error(`Failed to update ${userType} profile`);
             }
             handleSuccessNotification();
         } catch (error) {
             console.error(error);
-            alert('Įvyko klaida atnaujinant profilį');
+            alert('An error occurred while updating the profile');
         }
     };
 
@@ -153,7 +150,7 @@ const ProfilePage = () => {
     const handleDelete = async () => {
         const token = userData.token;
         if (!token) {
-            alert('Trūksta autentifikacijos rakto');
+            alert('Authentication token is missing');
             return;
         }
 
@@ -170,13 +167,13 @@ const ProfilePage = () => {
                 },
             });
             if (!response.ok) {
-                throw new Error(`Nepavyko ištrinti ${userType} profilio`);
+                throw new Error(`Failed to delete ${userType} profile`);
             }
             localStorage.clear();
             window.location.href = '/';
         } catch (error) {
             console.error(error);
-            alert('Įvyko klaida ištrinant profilį');
+            alert('An error occurred while deleting the profile');
         }
     };
 
@@ -189,16 +186,10 @@ const ProfilePage = () => {
                 style={{ minHeight: '100vh', paddingTop: '80px' }}
             >
                 <div className="card shadow p-4" style={{ maxWidth: '500px', width: '100%' }}>
-                    <button
-                        className="btn-light mb-2"
-                        onClick={() => window.history.back()}
-                    >
-                        ← Grįžti
-                    </button>
-                    <h4 className="mb-4 text-center">Redaguoti mano profilį</h4>
+                    <h4 className="mb-4 text-center">Edit My Profile</h4>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
-                            <label className="form-label">Vardas</label>
+                            <label className="form-label">Name</label>
                             <input
                                 type="text"
                                 name="name"
@@ -210,7 +201,7 @@ const ProfilePage = () => {
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Pavardė</label>
+                            <label className="form-label">Last Name</label>
                             <input
                                 type="text"
                                 name="surname"
@@ -222,7 +213,7 @@ const ProfilePage = () => {
                         </div>
 
                         <div className="mb-4">
-                            <label className="form-label">El. paštas</label>
+                            <label className="form-label">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -234,7 +225,7 @@ const ProfilePage = () => {
                         </div>
 
                         <button type="submit" className="btn btn-success w-100 mb-2">
-                            Pateikti
+                            Submit
                         </button>
                         <button
                             type="button"
@@ -248,7 +239,7 @@ const ProfilePage = () => {
                             className="btn btn-danger w-100"
                             onClick={() => setShowModal(true)}
                         >
-                            Ištrinti profilį
+                            Delete Profile
                         </button>
                     </form>
                 </div>
@@ -257,19 +248,19 @@ const ProfilePage = () => {
             {showModal && (
                 <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center">
                     <div className="bg-white p-4 rounded shadow" style={{ width: '90%', maxWidth: '400px' }}>
-                        <p className="mb-3">⚠️ Ar tikrai norite ištrinti savo profilį?</p>
+                        <p className="mb-3">⚠️ Are you sure you want to delete your profile?</p>
                         <div className="d-flex justify-content-end">
                             <button
                                 className="btn btn-danger me-2"
                                 onClick={handleDelete}
                             >
-                                Taip
+                                OK
                             </button>
                             <button
                                 className="btn btn-secondary"
                                 onClick={() => setShowModal(false)}
                             >
-                                Atšaukti
+                                Cancel
                             </button>
                         </div>
                     </div>

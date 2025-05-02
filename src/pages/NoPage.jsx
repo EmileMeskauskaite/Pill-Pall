@@ -1,7 +1,7 @@
 const NoPage = () => {
   return (
    <>
-    <div>404 puslapis nerastas</div>
+    <div>404 no page</div>
    </> 
   )
 }

@@ -28,13 +28,13 @@ const CalendarTimeButtons = (props) => {
           className="btn btn-outline-primary"
           onClick={() => setDateRange(moveWeekBack(dateRange))}
         >
-          ← Praeita savaitė
+          ← Previous Week
         </button>
         <button
           className="btn btn-outline-primary"
           onClick={() => setDateRange(moveWeekForward(dateRange))}
         >
-          Kita savaitė →
+          Next Week →
         </button>
       </div>
     </div>

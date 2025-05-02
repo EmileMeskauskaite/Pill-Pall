@@ -23,7 +23,7 @@ const Header = () => {
         <div className="d-flex align-items-center" style={{ width: '100px' }}>
           {/* Logo */}
           <Link to="/">
-            <img src={logo} style={{ width: "100px", height: "auto" }} alt="Logotipas" />
+            <img src={logo} style={{ width: "100px", height: "auto" }} alt="Logo" />
           </Link>
         </div>
 
@@ -31,31 +31,31 @@ const Header = () => {
         <div className="d-none d-md-flex gap-2">
           {!urlPath.includes("/profile-page/") && caretakerData && (
             <Link className="btn btn-info text-nowrap" to={caretakerPage}>
-              Profilis
+              Profile
             </Link>
           )}
           {!urlPath.includes("/profile-page/") && !caretakerData && userData && (
             <Link className="btn btn-info text-nowrap" to={userPage}>
-              Mano profilis
+              My Profile
             </Link>
           )}
           {!urlPath.includes("/caretaker-page/") && caretakerData && (
             <Link className="btn btn-warning" to="/caretaker-page">
-              Vartotojų sąrašas
+              User List
             </Link>
           )}
           {(urlPath.includes("/schedule") || urlPath.includes("/reminder")) && (
             <Link className="btn btn-primary" to="/medicine">
-              Vaistai
+              Medicine
             </Link>
           )}
           {(!urlPath.includes("/caretaker-page") && !urlPath.includes("/schedule")) && (
             <Link className="btn btn-primary" to="/schedule">
-              Grafikai
+              Schedules
             </Link>
           )}
           <Link onClick={handleLogOff} to="/" className="btn btn-danger">
-            Atsijungti
+            Log Off
           </Link>
         </div>
 
@@ -64,7 +64,7 @@ const Header = () => {
           <button
             className="btn p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Perjungti meniu"
+            aria-label="Toggle menu"
             style={{ fontSize: '1.5rem' }}
           >
             <svg
@@ -93,31 +93,31 @@ const Header = () => {
           <div className="d-flex flex-column gap-2">
             {!urlPath.includes("/profile-page/") && caretakerData && (
               <Link className="btn btn-info w-100 text-nowrap" to={caretakerPage}>
-                Profilis
+                Profile
               </Link>
             )}
             {!urlPath.includes("/profile-page/") && !caretakerData && userData && (
               <Link className="btn btn-info w-100 text-nowrap" to={userPage}>
-                Mano profilis
+                My Profile
               </Link>
             )}
             {!urlPath.includes("/caretaker-page/") && caretakerData && (
               <Link className="btn btn-warning w-100" to="/caretaker-page">
-                Vartotojų sąrašas
+                User List
               </Link>
             )}
             {(urlPath.includes("/schedule") || urlPath.includes("/reminder")) && (
               <Link className="btn btn-primary w-100" to="/medicine">
-                Vaistai
+                Medicine
               </Link>
             )}
             {(!urlPath.includes("/caretaker-page") && !urlPath.includes("/schedule")) && (
               <Link className="btn btn-primary w-100" to="/schedule">
-                Grafikai
+                Schedules
               </Link>
             )}
             <Link onClick={handleLogOff} to="/" className="btn btn-danger w-100">
-              Atsijungti
+              Log Off
             </Link>
           </div>
         </div>

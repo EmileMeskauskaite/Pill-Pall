@@ -29,11 +29,11 @@ const RegisterForm = (props) => {
 
   const validatePassword = (password) => {
     if (password.length < 8)
-      return "Slaptažodis turi būti bent 8 simbolių ilgio";
+      return "Password must be at least 8 characters long";
     if (!/[A-Z]/.test(password))
-      return "Slaptažodis turi turėti bent vieną didžiąją raidę";
+      return "Password must contain at least one uppercase letter";
     if (!/[0-9]/.test(password))
-      return "Slaptažodis turi turėti bent vieną skaičių";
+      return "Password must contain at least one number";
     return null;
   };
 
@@ -50,12 +50,12 @@ const RegisterForm = (props) => {
       !password ||
       !repeatPassword
     ) {
-      setError("Prašome užpildyti visus laukus");
+      setError("Please fill in all fields");
       return;
     }
 
     if (password !== repeatPassword) {
-      setError("Slaptažodžiai nesutampa");
+      setError("Passwords do not match");
       return;
     }
 
@@ -86,12 +86,12 @@ const RegisterForm = (props) => {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || "Nepavyko užsiregistruoti");
+          throw new Error(data.message || "Failed to register");
         }
 
         setShowSuccessModal(true);
       } catch (err) {
-        setError(err.message || "Registracija nepavyko.");
+        setError(err.message || "Registration failed.");
       }
     } else {
       try {
@@ -111,12 +111,12 @@ const RegisterForm = (props) => {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.message || "Nepavyko užsiregistruoti");
+          throw new Error(data.message || "Failed to register");
         }
 
         setShowSuccessModal(true);
       } catch (err) {
-        setError(err.message || "Registracija nepavyko.");
+        setError(err.message || "Registration failed.");
       }
     }
   };
@@ -139,17 +139,17 @@ const RegisterForm = (props) => {
           className="btn-light mb-2"
           onClick={() => window.history.back()}
         >
-          ← Grįžti
+          ← Back
         </button>
 
         {userType == "caretaker" ? (
-          <h2 className="text-center mb-4">Prižiūrėtojo registracija</h2>
+          <h2 className="text-center mb-4">Caretaker Register</h2>
         ) : (
-          <h2 className="text-center mb-4">Registracija</h2>
+          <h2 className="text-center mb-4">Register</h2>
         )}
         <form onSubmit={handleRegister}>
           <div className="mb-3">
-            <label className="form-label">Vardas</label>
+            <label className="form-label">First Name</label>
             <input
               type="text"
               name="name"
@@ -159,7 +159,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Pavardė</label>
+            <label className="form-label">Last Name</label>
             <input
               type="text"
               name="surname"
@@ -169,7 +169,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Gimimo data</label>
+            <label className="form-label">Date of Birth</label>
             <input
               type="date"
               name="date_of_birth"
@@ -179,7 +179,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">El. paštas</label>
+            <label className="form-label">Email</label>
             <input
               type="email"
               name="email"
@@ -189,7 +189,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Slaptažodis</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
               name="password"
@@ -199,7 +199,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Pakartokite slaptažodį</label>
+            <label className="form-label">Repeat Password</label>
             <input
               type="password"
               name="repeatPassword"
@@ -210,27 +210,27 @@ const RegisterForm = (props) => {
           </div>
 
           <button type="submit" className="btn btn-success w-100">
-            Registruotis
+            Register
           </button>
         </form>
         {userType == "caretaker" ? (
           <p className="text-center mt-3">
-            Jau turite prižiūrėtojo paskyrą?{" "}
+            Already have a caretaker account?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/caretaker-login")}
             >
-              Prisijunkite čia
+              Login here
             </button>
           </p>
         ) : (
           <p className="text-center mt-3">
-            Jau turite paskyrą?{" "}
+            Already have an account?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/login")}
             >
-              Prisijunkite čia
+              Login here
             </button>
           </p>
         )}
@@ -248,7 +248,7 @@ const RegisterForm = (props) => {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title text-danger">
-                    Registracijos klaida
+                    Registration Failed
                   </h5>
                   <button
                     type="button"
@@ -265,12 +265,13 @@ const RegisterForm = (props) => {
                     className="btn btn-secondary"
                     onClick={() => setError(null)}
                   >
-                    Uždaryti
+                    Close
                   </button>
                 </div>
               </div>
             </div>
           </div>
+          <div className="modal-backdrop fade show"></div>
         </>
       )}
 
@@ -285,33 +286,25 @@ const RegisterForm = (props) => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title text-success">
-                    Registracija sėkminga
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowSuccessModal(false)}
-                  ></button>
+                  <h5 className="modal-title">Success</h5>
                 </div>
                 <div className="modal-body">
-                  <p>Registracija sėkmingai užbaigta!</p>
+                  <p>
+                    Successfully Registered! Please check your email to confirm.
+                  </p>
                 </div>
                 <div className="modal-footer">
                   <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() => {
-                      setShowSuccessModal(false);
-                      navigate("/login");
-                    }}
+                    className="btn btn-primary"
+                    onClick={() => navigate("/")}
                   >
-                    Prisijungti
+                    OK
                   </button>
                 </div>
               </div>
             </div>
           </div>
+          <div className="modal-backdrop fade show"></div>
         </>
       )}
     </div>

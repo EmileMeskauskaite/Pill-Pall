@@ -78,7 +78,7 @@ const ReminderModal = (props) => {
     return (
       <div className="form-modal-backdrop">
         <div className="reminder-modal-container">
-          <p>Kraunami vaisto duomenys...</p>
+          <p>Loading medicine data...</p>
         </div>
       </div>
     );
@@ -95,21 +95,21 @@ const ReminderModal = (props) => {
         <div className="reminder-modal-body">
           <h2>{medicineData?.medicine_name || reminder.medicine_name}</h2>
           <p>
-            <strong>Stiprumas:</strong>{" "}
+            <strong>Strength:</strong>{" "}
             {medicineData?.strength || reminder.strength}
           </p>
           <p>
-            <strong>Kiekis:</strong> {medicineData?.amount || reminder.amount}
+            <strong>Amount:</strong> {medicineData?.amount || reminder.amount}
           </p>
           <p>
-            <strong>Pastabos:</strong> {medicineData?.notes || reminder.notes}
+            <strong>Notes:</strong> {medicineData?.notes || reminder.notes}
           </p>
           <p>
-            <strong>Priminimo data:</strong>{" "}
+            <strong>Reminder Date:</strong>{" "}
             {new Date(reminder.reminder_date).toLocaleDateString()}
           </p>
           <p>
-            <strong>Priminimo laikas:</strong> {reminder.reminder_time}
+            <strong>Reminder Time:</strong> {reminder.reminder_time}
           </p>
 
           <div className="reminder-modal-checkbox-container">
@@ -120,7 +120,7 @@ const ReminderModal = (props) => {
                 cursor: "pointer",
               }}
             >
-              <div>Pažymėti kaip išgertą</div>
+              <div>Mark as TAKEN</div>
               <input
                 className="form-check-input"
                 style={{

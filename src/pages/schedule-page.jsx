@@ -71,10 +71,10 @@ const SchedulePage = () => {
         const parsed = await response.json();
         return parsed;
       } else {
-        console.error("Nepavyko gauti priminimų");
+        console.error("Failed to fetch reminders");
       }
     } catch (err) {
-      console.error("Klaida:", err);
+      console.error("Error:", err);
     }
   };
 
@@ -82,10 +82,10 @@ const SchedulePage = () => {
     <>
       <Header />
       {successShow && <SuccessNotification />}
-      <h1 className="text-center">Labas, {userName}</h1>
+      <h1 className="text-center">Welcome, {userName}</h1>
       <div className="container py-4">
         <h2 className="text-center mb-4"></h2>
-        <h3 className="text-center mb-4">Savaitinis Vaistų Kalendorius</h3>
+        <h3 className="text-center mb-4">Weekly Pill Calendar</h3>
         <CalendarTimeButtons
           dateRange={dateRange}
           setDateRange={setDateRange}

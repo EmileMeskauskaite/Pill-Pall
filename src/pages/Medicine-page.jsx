@@ -44,7 +44,8 @@ const MedicinePage = () => {
         return parsed;
       }
     } catch (err) {
-      console.error("Nepavyko gauti duomenų, ar serveris paleistas?");
+      console.error("Could not fetch, has the server started?");
+      // navigate("/");
     }
   };
 
@@ -93,14 +94,18 @@ const MedicinePage = () => {
   
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || "Įvyko klaida");
+        throw new Error(data.message || "Something went wrong");
       }
   
       handleSuccessNotification();
       refetchMedicines();
       handleCloseForm();
     } catch (err) {
+<<<<<<< HEAD
       console.error(err.message || "Nepavyko pateikti formos.");
+=======
+      console.log(err.message || "Failed to submit form.");
+>>>>>>> parent of 1ecc078 (Translate user interface text to Lithuanian across multiple components, including forms, notifications, and pages. Update validation messages and button labels for better user experience in the Lithuanian language.)
     }
   };
 
@@ -108,11 +113,9 @@ const MedicinePage = () => {
     setEditingMedicine(medicine);
     setShowForm(true);
   };
-
-  const handleReminderButton = (medicineId) => {
-    navigate(`/reminder/${medicineId}`);
-  }
-
+const handleReminderButton = (medicineId) => {
+  navigate(`/reminder/${medicineId}`);
+}
   return (
     <>
       <Header />
@@ -131,11 +134,11 @@ const MedicinePage = () => {
           className="btn btn-success mx-3"
           onClick={handleCreateButton}
         >
-          Sukurti naują vaistą
+          Create New Medicine
         </button>
       </div>
       {medicines.length === 0 ? (
-        <div>Nėra sukurtų vaistų.</div>
+        <div>There are no medicines created.</div>
       ) : (
         <MedicineList
           className="medicine-list-container"

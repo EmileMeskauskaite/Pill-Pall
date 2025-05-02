@@ -18,10 +18,10 @@ const AddUserForm = (props) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <h4 className="mb-3">Išsiųsti užklausą esamo vartotojo el. paštu, kad galėtumėte jį stebėti.</h4>
+        <h4 className="mb-3">Send request to existing user's email to monitor them.</h4>
 
         <div className="mb-2">
-          <label>Vartotojo el. paštas</label>
+          <label>User's Email</label>
           <input
             type="text"
             name="userEmail"
@@ -32,7 +32,7 @@ const AddUserForm = (props) => {
             required
           />
         </div>
-      <button type="submit" className="btn btn-success">Išsiųsti užklausą</button>
+      <button type="submit" className="btn btn-success">Send Request</button>
       </form>
     </>
   );
