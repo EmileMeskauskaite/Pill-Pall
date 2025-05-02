@@ -29,8 +29,11 @@ module.exports = {
     try {
       const reminderData = req.body;
       
-      // Extract week_days from the request
-      const weekDays = reminderData.week_days || (reminderData.week_day ? [reminderData.week_day] : []);
+      // Ensure week_days is an array
+      const weekDays = reminderData.week_days || [];
+      if (weekDays.length === 0) {
+        return res.status(400).json({ error: "At least one week day must be selected" });
+      }
       
       // Create the reminder rule
       const reminderId = await Reminders.createReminderRule({
@@ -41,52 +44,53 @@ module.exports = {
       // Create reminders for each week day
       const reminders = await Reminders.createReminders(
         reminderId, 
-        req.body.start_date, 
-        req.body.end_date, 
+        reminderData.start_date, 
+        reminderData.end_date, 
         weekDays
       );
       
       res.status(201).json({ id: reminderId });
-
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Error creating reminder." });
     }
-    
   },
 
   updateRule: async (req, res) => {
     try {
       const { userId, reminderId } = req.params;
+      const updateData = req.body;
       
-      // Extract week_days from the request
-      const weekDays = req.body.week_days || (req.body.week_day ? [req.body.week_day] : []);
+      // Ensure week_days is an array
+      const weekDays = updateData.week_days || [];
+      if (weekDays.length === 0) {
+        return res.status(400).json({ error: "At least one week day must be selected" });
+      }
       
       // Update the reminder rule
       const updated = await Reminders.updateReminderRule(
         userId,
         reminderId,
         {
-          ...req.body,
+          ...updateData,
           week_days: weekDays
         }
       );
       
-      if (!updated)
-        return res
-          .status(404)
-          .json({ error: "Reminder not found or not updated." });
+      if (!updated) {
+        return res.status(404).json({ error: "Reminder not found or not updated." });
+      }
       
       // Delete existing reminders and create new ones
-      await Reminders.deleteRemindersByRuleId(req.body.id);
+      await Reminders.deleteRemindersByRuleId(reminderId);
       await Reminders.createReminders(
-        req.body.id, 
-        req.body.start_date, 
-        req.body.end_date, 
+        reminderId, 
+        updateData.start_date, 
+        updateData.end_date, 
         weekDays
       );
       
-      res.status(200).json({ message: "Reminder updated." });
+      res.status(200).json({ message: "Reminder updated successfully." });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Error updating reminder." });
@@ -98,10 +102,8 @@ module.exports = {
       const { userId, reminderId } = req.params;
       const deleted = await Reminders.deleteReminderRule(userId, reminderId);
       if (!deleted)
-        return res
-          .status(404)
-          .json({ error: "Reminder not found or not deleted." });
-      res.status(200).json({ message: "Reminder deleted." });
+        return res.status(404).json({ error: "Reminder not found or not deleted." });
+      res.status(200).json({ message: "Reminder deleted successfully." });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Error deleting reminder." });
@@ -113,7 +115,6 @@ module.exports = {
       const { userId } = req.params;
       let { ids } = req.body;
 
-      // In case string
       if (typeof ids === "string") {
         try {
           ids = JSON.parse(ids);
@@ -123,11 +124,7 @@ module.exports = {
       }
 
       if (!Array.isArray(ids) || ids.length === 0) {
-        return res
-          .status(400)
-          .json({
-            error: "Provide an array or a string of reminder IDs to delete.",
-          });
+        return res.status(400).json({ error: "Provide an array of reminder IDs to delete." });
       }
 
       const deletedCount = await Reminders.deleteMultipleReminderRules(userId, ids);
@@ -138,13 +135,13 @@ module.exports = {
     }
   },
 
-  // Actual Reminders
   getAllReminders: async (req, res) => {
     try {
       const userId = req.params.userId;
       const reminders = await Reminders.getAllReminders(userId);
       res.status(200).json(reminders);
     } catch (err) {
+      console.error(err);
       res.status(500).json({ error: "Error fetching reminders." });
     }
   },
@@ -154,17 +151,18 @@ module.exports = {
       const reminderId = req.params.reminderId;
 
       if (!('taken' in req.body)) {
-        return res.status(400).json({ error: "Can't find taken field." });
+        return res.status(400).json({ error: "Missing 'taken' field in request body." });
       }
 
       const updated = await Reminders.updateTakenStatus(reminderId, req.body.taken);
       if (updated > 0) {
-        res.status(200).json({ message: "Reminder updated." });
+        res.status(200).json({ message: "Reminder status updated successfully." });
       } else {
         res.status(404).json({ error: "Reminder not found." });
       }
     } catch (err) {
-      res.status(500).json({ error: "Error updating reminder." });
+      console.error(err);
+      res.status(500).json({ error: "Error updating reminder status." });
     }
   },
 
@@ -174,8 +172,8 @@ module.exports = {
       const rules = await Reminders.getRulesByMedicineId(medicineId);
       res.status(200).json(rules);
     } catch (err) {
-      console.error(" Error in getRulesByMedicineId:", err);
-      res.status(500).json({ error: "Error retrieving rules." });
+      console.error("Error in getRulesByMedicineId:", err);
+      res.status(500).json({ error: "Error retrieving reminder rules." });
     }
   },
 
@@ -189,7 +187,7 @@ module.exports = {
       res.status(200).json({ medicine_name: name });
     } catch (err) {
       console.error("Error in getMedicineNameFromReminderId:", err);
-      res.status(500).json({ error: "Internal server error." });
+      res.status(500).json({ error: "Error retrieving medicine name." });
     }
   },
 };

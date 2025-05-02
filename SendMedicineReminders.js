@@ -14,7 +14,6 @@ const transporter = nodemailer.createTransport({
 async function sendMedicineReminders() {
   const now = new Date();
 
-  // 1) grab all today’s unapplied reminders, formatting the date in SQL
   const [rows] = await db.query(
     `SELECT
        r.id                        AS reminderId,
@@ -38,7 +37,6 @@ async function sendMedicineReminders() {
   );
 
   for (const rem of rows) {
-    // rem.reminderDate is now a 'YYYY-MM-DD' string
     const scheduledTs = new Date(`${rem.reminderDate}T${rem.reminderTime}`).getTime();
     const sendTs = scheduledTs - rem.minutesBefore * 60_000;
 
@@ -46,19 +44,19 @@ async function sendMedicineReminders() {
       const mailOptions = {
         from:    `"PillPal" <${process.env.EMAIL_USER}>`,
         to:      rem.userEmail,
-        subject: '📬 Medication Reminder',
+        subject: '📬 Vaistų priminimas',
         html: `
-          <p>Hi ${rem.firstName},</p>
-          <p>This is a reminder to take your medicine
+          <p>Sveiki, ${rem.firstName},</p>
+          <p>Primename, kad reikia išgerti vaistus
              <strong>${rem.medicineName}</strong>
-             on <strong>${rem.reminderDate}</strong>
-             at <strong>${rem.reminderTime}</strong>.</p>
-          <p>(Sent ${rem.minutesBefore} minutes before your scheduled time.)</p>
+             <strong>${rem.reminderDate}</strong> dieną
+             <strong>${rem.reminderTime}</strong> valandą.</p>
+          <p>(Šis priminimas išsiųstas ${rem.minutesBefore} min. prieš suplanuotą laiką.)</p>
         `,
       };
 
       try {
-        console.log(`→ Sending reminder #${rem.reminderId} to ${rem.userEmail}`);
+        console.log(`→ Siunčiamas priminimas #${rem.reminderId} vartotojui ${rem.userEmail}`);
         await transporter.sendMail(mailOptions);
         await db.query(
           `UPDATE reminders
@@ -66,9 +64,9 @@ async function sendMedicineReminders() {
            WHERE id = ?`,
           [rem.reminderId]
         );
-        console.log(`✔ Reminder #${rem.reminderId} marked sent`);
+        console.log(`✔ Priminimas #${rem.reminderId} pažymėtas kaip išsiųstas`);
       } catch (emailErr) {
-        console.error(`✖ Failed to send reminder #${rem.reminderId}:`, emailErr);
+        console.error(`✖ Nepavyko išsiųsti priminimo #${rem.reminderId}:`, emailErr);
       }
     }
   }

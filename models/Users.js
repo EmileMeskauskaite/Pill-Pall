@@ -8,7 +8,6 @@ const SECRET = process.env.JWT_SECRET;
 const getTable = (type) => {
   if (type === 'caretaker') {return 'caretakers';}
     else {return 'users';}
-
 };
 
 module.exports = {
@@ -63,8 +62,8 @@ module.exports = {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Confirm your account',
-      html: `<p>Hello,</p><p>Please confirm your account:</p><a href="${confirmUrl}">${confirmUrl}</a>`,
+      subject: 'Patvirtinkite savo paskyrą',
+      html: `<p>Sveiki,</p><p>Prašome patvirtinti savo paskyrą:</p><a href="${confirmUrl}">${confirmUrl}</a>`,
     };
     return transporter.sendMail(mailOptions);
   },
@@ -90,7 +89,7 @@ module.exports = {
     `, [caretakerId, userId]);
   
     if (rows.length > 0) {
-      throw new Error("User already added or pending confirmation.");
+      throw new Error("Naudotojas jau pridėtas arba laukia patvirtinimo.");
     }
   
     const [result] = await db.query(`
@@ -118,9 +117,9 @@ module.exports = {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Caretaker Access Confirmation',
-      html: `<p>You’ve been invited to connect with a caretaker.</p>
-             <p>${caretakerName} ${caretakerSurname} wants to connect with your account. Click below to confirm:</p>
+      subject: 'Globėjo prieigos patvirtinimas',
+      html: `<p>Jūs buvote pakviestas susieti savo paskyrą su globėju.</p>
+             <p>${caretakerName} ${caretakerSurname} nori susieti savo paskyrą su jūsų. Spustelėkite žemiau esančią nuorodą, kad patvirtintumėte:</p>
              <a href="${confirmUrl}">${confirmUrl}</a>`,
     };
     return transporter.sendMail(mailOptions);
@@ -158,8 +157,8 @@ module.exports = {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Password Reset Request',
-      html: `<p>You requested a password reset. Click below to reset your password:</p>
+      subject: 'Slaptažodžio atstatymo užklausa',
+      html: `<p>Jūs pateikėte prašymą atstatyti slaptažodį. Spustelėkite žemiau esančią nuorodą, kad tai atliktumėte:</p>
              <a href="${resetUrl}">${resetUrl}</a>`,
     };
     return transporter.sendMail(mailOptions);
@@ -174,23 +173,22 @@ module.exports = {
     return result.affectedRows > 0;
   },
 
-updateUser: async (id, updateData, type = 'user') => {
-  const table = getTable(type);
-  const fields = Object.keys(updateData).map(key => `${key} = ?`).join(', ');
-  const values = Object.values(updateData);
+  updateUser: async (id, updateData, type = 'user') => {
+    const table = getTable(type);
+    const fields = Object.keys(updateData).map(key => `${key} = ?`).join(', ');
+    const values = Object.values(updateData);
 
-  const [result] = await db.query(
-    `UPDATE ${table} SET ${fields} WHERE id = ?`,
-    [...values, id]
-  );
+    const [result] = await db.query(
+      `UPDATE ${table} SET ${fields} WHERE id = ?`,
+      [...values, id]
+    );
 
-  return result.affectedRows > 0;
-},
+    return result.affectedRows > 0;
+  },
 
-deleteUser: async (id, type = 'user') => {
-  const table = getTable(type);
-  const [result] = await db.query(`DELETE FROM ${table} WHERE id = ?`, [id]);
-  return result.affectedRows > 0;
-},
-
+  deleteUser: async (id, type = 'user') => {
+    const table = getTable(type);
+    const [result] = await db.query(`DELETE FROM ${table} WHERE id = ?`, [id]);
+    return result.affectedRows > 0;
+  },
 };

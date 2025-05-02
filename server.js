@@ -19,6 +19,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root route handler
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Pill-Pall API is running' });
+});
+
 // Routes
 app.use(userRoutes);
 app.use(medicineRoutes);

@@ -25,6 +25,18 @@ const register = (type = 'user') => async (req, res) => {
     return res.status(400).json({ error: "All fields must be filled." });
   }
 
+  if (password.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters long." });
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return res.status(400).json({ error: "Password must contain at least one uppercase letter." });
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return res.status(400).json({ error: "Password must contain at least one number." });
+  }
+
   try {
     const emailExists = await Users.checkEmailExists(email, type);
     if (emailExists) {
@@ -78,7 +90,7 @@ const login = (type = 'user') => async (req, res) => {
     const match = await Users.checkPassword(password, user.password);
     if (!match) return res.status(401).json({ error: "Wrong password" });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "12h" });
 
     res.json({
       token,
@@ -230,6 +242,18 @@ const resetPassword = async (req, res) => {
     return res.status(400).json({ error: "Token and new password are required." });
   }
 
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters long." });
+  }
+
+  if (!/[A-Z]/.test(newPassword)) {
+    return res.status(400).json({ error: "Password must contain at least one uppercase letter." });
+  }
+
+  if (!/[0-9]/.test(newPassword)) {
+    return res.status(400).json({ error: "Password must contain at least one number." });
+  }
+
   try {
     const decoded = jwt.verify(token, SECRET);
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -298,6 +322,62 @@ const deleteUser = (type = 'user') => async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+    const { newPassword } = req.body;
+    const userId = req.params.userId || req.params.caretakerId;
+    const type = req.params.userId ? 'user' : 'caretaker';
+
+    if (!newPassword) {
+        return res.status(400).json({ error: "Naujas slaptažodis yra privalomas." });
+    }
+
+    if (newPassword.length < 8) {
+        return res.status(400).json({ error: "Slaptažodis turi būti bent 8 simbolių ilgio." });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+        return res.status(400).json({ error: "Slaptažodis turi turėti bent vieną didžiąją raidę." });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ error: "Slaptažodis turi turėti bent vieną skaičių." });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const success = await Users.updatePassword(userId, hashedPassword, type);
+        
+        if (!success) {
+            return res.status(404).json({ error: "Vartotojas nerastas." });
+        }
+
+        res.json({ message: "Slaptažodis sėkmingai atnaujintas." });
+    } catch (err) {
+        console.error("Slaptažodžio atnaujinimo klaida:", err);
+        res.status(500).json({ error: "Nepavyko atnaujinti slaptažodžio." });
+    }
+};
+
+const verifyPassword = async (req, res) => {
+    const { email, password, type = 'user' } = req.body;
+
+    try {
+        const user = await Users.getUserByEmail(email, type);
+        if (!user) {
+            return res.status(404).json({ error: "Vartotojas nerastas" });
+        }
+
+        const match = await Users.checkPassword(password, user.password);
+        if (!match) {
+            return res.status(401).json({ error: "Neteisingas slaptažodis" });
+        }
+
+        res.json({ message: "Slaptažodis teisingas" });
+    } catch (err) {
+        console.error("Slaptažodžio patikrinimo klaida:", err);
+        res.status(500).json({ error: "Nepavyko patikrinti slaptažodžio" });
+    }
+};
 
 module.exports = {
   registerUser: register("user"),
@@ -316,4 +396,6 @@ module.exports = {
   updateCaretaker: updateUser("caretaker"),
   deleteUser: deleteUser("user"),
   deleteCaretaker: deleteUser("caretaker"),
+  updatePassword,
+  verifyPassword,
 };
