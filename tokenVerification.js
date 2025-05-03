@@ -17,7 +17,6 @@ module.exports = {
         console.log("Unauthorized access " + new Date());
         return res.status(403).json({ error: "Unauthorized access" });
       }
-      console.log("Verified " + new Date());
       next();
     } catch (err) {
       console.log("Bad or expired token " + new Date());
@@ -38,7 +37,6 @@ module.exports = {
         console.log("Unauthorized caretaker access " + new Date());
         return res.status(403).json({ error: "Unauthorized access" });
       }
-      console.log("Verified caretaker " + new Date());
       next();
     } catch (err) {
       console.log("Bad or expired token " + new Date());

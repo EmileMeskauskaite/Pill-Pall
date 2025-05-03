@@ -209,54 +209,47 @@ module.exports = {
     }
   },
 
-  createReminders: async (reminder_rules_id, startDate, endDate, weekDays) => {
-    try {
-      const remindersToInsert = [];
-      
-      // Handle both string dates and Date objects
-      const start = startDate instanceof Date ? startDate : new Date(startDate);
-      const end = endDate instanceof Date ? endDate : new Date(endDate);
-      let current = new Date(start);
-
-      // Ensure input dates are valid
-      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        throw new Error("Invalid date format");
-      }
-
-      // Ensure weekDays is an array of strings
-      const weekDaysArray = Array.isArray(weekDays) ? weekDays : [weekDays];
-
-      while (current <= end) {
-        const currentDay = current.getDay().toString();
-        if (weekDaysArray.includes(currentDay)) {
-          const year = current.getFullYear();
-          const month = String(current.getMonth() + 1).padStart(2, "0");
-          const day = String(current.getDate()).padStart(2, "0");
-          const formattedDate = `${year}-${month}-${day}`;
-          remindersToInsert.push([formattedDate, reminder_rules_id]);
-        }
-        
-        // Create a new Date object for the next day to avoid reference issues
-        const nextDay = new Date(current);
-        nextDay.setDate(nextDay.getDate() + 1);
-        current = nextDay;
-      }
-
-      if (remindersToInsert.length === 0) {
-        return 0;
-      }
-
-      const [result] = await db.query(
-        "INSERT INTO reminders (reminder_date, reminder_rules_id) VALUES ?",
-        [remindersToInsert]
-      );
-
-      return result.affectedRows;
-    } catch (err) {
-      console.error("Error creating reminders:", err);
-      throw new Error("Could not create reminders.");
+// models/Reminders.js
+createReminders: async (reminder_rules_id, startDate, endDate, weekDays) => {
+  try {
+    // Normalize inputs
+    const start = startDate instanceof Date ? startDate : new Date(startDate);
+    const end   = endDate   instanceof Date ? endDate   : new Date(endDate);
+    if (isNaN(start) || isNaN(end)) {
+      throw new Error("Invalid date format");
     }
-  },
+
+    // If the user accidentally passed end < start, swap them:
+    let [from, to] = start <= end ? [start, end] : [end, start];
+
+    // Ensure weekDays is an array of strings
+    const daysSet = new Set(
+      (Array.isArray(weekDays) ? weekDays : [weekDays]).map(String)
+    );
+
+    // Collect only the matching dates
+    const remindersToInsert = [];
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const dow = d.getDay().toString();
+      if (daysSet.has(dow)) {
+        const iso = d.toISOString().slice(0, 10);
+        remindersToInsert.push([iso, reminder_rules_id]);
+      }
+    }
+
+    if (!remindersToInsert.length) return 0;
+
+    const [result] = await db.query(
+      `INSERT INTO reminders (reminder_date, reminder_rules_id) VALUES ?`,
+      [remindersToInsert]
+    );
+    return result.affectedRows;
+  } catch (err) {
+    console.error("Error in createReminders:", err);
+    throw err;
+  }
+},
+
 
   getRulesByMedicineId: async (medicineId) => {
     const [reminderRules] = await db.query(
