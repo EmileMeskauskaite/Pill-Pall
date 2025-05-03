@@ -1,170 +1,219 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import ReminderList from "../components/ReminderList";
 import SuccessNotification from "../components/notifications/SuccessNotification";
-import FormModal from "../components/forms/FormModal";
-import ReminderForm from "../components/forms/ReminderForm";
 
 const ReminderPage = () => {
-    const navigate = useNavigate();
-    const { medicineId } = useParams();
-    const [reminders, setReminders] = useState([]);
-    const [successShow, setSuccessShow] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-    const [editingReminder, setEditingReminder] = useState(null);
+  const navigate = useNavigate();
+  const { medicineId } = useParams();
+  const [reminders, setReminders] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
 
-    const userData = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    if (!user) return navigate("/login");
+    fetchReminders();
+  }, []);
 
-    useEffect(() => {
-        if (!userData) {
-            navigate("/login");
-            return;
-        }
+  const fetchReminders = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5169/${user.id}/reminders/${medicineId}`,
+        { headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.token}` } }
+      );
+      if (!res.ok) return navigate("/404");
+      setReminders(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-        fetchReminders();
-    }, []);
+  const notify = () => {
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
 
-    const fetchReminders = async () => {
-        try {
-            if (!userData || !medicineId) {
-                console.warn("Missing user or medicine ID.");
-                return;
-            }
+  // Form state
+  const defaultDate = new Date().toISOString().slice(0,10);
+  const [formData, setFormData] = useState({
+    reminder_minutes_before: "0",
+    start_date: defaultDate,
+    end_date: defaultDate,
+    reminder_time: "12:00",
+    week_days: []
+  });
 
-            const response = await fetch(
-                `http://localhost:5169/${userData.id}/reminders/${medicineId}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${userData.token}`,
-                    },
-                }
-            );
+  const weekDays = [
+    { id: "0", name: "Sekmadienis" },
+    { id: "1", name: "Pirmadienis" },
+    { id: "2", name: "Antradienis" },
+    { id: "3", name: "Trečiadienis" },
+    { id: "4", name: "Ketvirtadienis" },
+    { id: "5", name: "Penktadienis" },
+    { id: "6", name: "Šeštadienis" },
+  ];
 
-            if (!response.ok) {
-                console.error("Failed to fetch reminders. Redirecting to 404.");
-                navigate("/404");
-                return;
-            }
+  const openCreate = () => {
+    setEditing(null);
+    setFormData({
+      reminder_minutes_before: "0",
+      start_date: defaultDate,
+      end_date: defaultDate,
+      reminder_time: "12:00",
+      week_days: []
+    });
+    setShowForm(true);
+  };
 
-            const data = await response.json();
-            setReminders(data);
-            return data;
+  const openEdit = (item) => {
+    setEditing(item);
+    setFormData({
+      reminder_minutes_before: String(item.reminder_minutes_before),
+      start_date: item.start_date.slice(0,10),
+      end_date: item.end_date.slice(0,10),
+      reminder_time: item.reminder_time.slice(0,5),
+      week_days: item.week_days.map(String)
+    });
+    setShowForm(true);
+  };
 
-        } catch (err) {
-            console.error("Error fetching reminders:", err);
-        }
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    const refetchReminders = () => {
-        if (userData) {
-            fetchReminders();
-        }
-    };
+  const handleNum = (e) => {
+    const { name, value } = e.target;
+    if (/^\d*$/.test(value) && (value === "" || (+value >= 0 && +value <= 60))) {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
 
-    const handleSuccessNotification = () => {
-        setSuccessShow(true);
-        setTimeout(() => setSuccessShow(false), 3100);
-    };
+  const toggleDay = (id) => {
+    setFormData(prev => {
+      const days = prev.week_days.includes(id)
+        ? prev.week_days.filter(d => d !== id)
+        : [...prev.week_days, id];
+      return { ...prev, week_days: days };
+    });
+  };
 
-    const handleCreateButton = () => {
-        setShowForm(true);
-    };
+  const submitForm = async (e) => {
+    e.preventDefault();
+    if (formData.week_days.length === 0) {
+      alert("Pasirinkite bent vieną savaitės dieną");
+      return;
+    }
+    try {
+      const url = editing
+        ? `http://localhost:5169/${user.id}/rules/${editing.id}`
+        : `http://localhost:5169/${user.id}/rules`;
+      const method = editing ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.token}` },
+        body: JSON.stringify({
+          ...formData,
+          reminder_minutes_before: +formData.reminder_minutes_before,
+          week_days: formData.week_days.map(Number),
+          medicine_id: +medicineId,
+          user_id: user.id
+        }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      notify();
+      fetchReminders();
+      setShowForm(false);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
-    const handleCloseForm = () => {
-        setShowForm(false);
-        setEditingReminder(null);
-    };
-
-    const handleFormSubmit = async (formData) => {
-        try {
-            const url = editingReminder
-                ? `http://localhost:5169/${userData.id}/rules/${editingReminder.id}`
-                : `http://localhost:5169/${userData.id}/rules`;
-
-            const method = editingReminder ? "PUT" : "POST";
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${userData.token}`,
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    medicine_id: medicineId,
-                    user_id: userData.id,
-                }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || "Something went wrong");
-            }
-
-            handleSuccessNotification();
-            refetchReminders();
-            handleCloseForm();
-        } catch (err) {
-            console.error(err.message || "Failed to submit form.");
-        }
-    };
-
-    const handleEditButton = (reminder) => {
-        const formatDate = (dateStr) => dateStr?.slice(0, 10) || "";
-        const formatTime = (timeStr) => timeStr?.slice(0, 5) || "";
-
-        const formattedReminder = {
-            ...reminder,
-            start_date: formatDate(reminder.start_date),
-            end_date: formatDate(reminder.end_date),
-            reminder_time: formatTime(reminder.reminder_time),
-        };
-
-        setEditingReminder(formattedReminder);
-        setShowForm(true);
-    };
-
-    const handleReminderButton = (reminderId) => {
-        navigate(`/reminder/${reminderId}`);
-    };
-
-    return (
-        <>
-            <Header />
-            {successShow && <SuccessNotification />}
-            {showForm && (
-                <FormModal
-                    handleCloseModal={handleCloseForm}
-                    form={ReminderForm}
-                    submitFunction={handleFormSubmit}
-                    existingData={editingReminder}
-                />
-            )}
-            <div>
-                <button
-                    style={{ width: "15em" }}
-                    className="btn btn-success mx-3"
-                    onClick={handleCreateButton}
-                >
-                    Create New Reminder
-                </button>
+  return (
+    <>
+      <Header />
+      {showSuccess && <SuccessNotification />}
+      <div className="container mt-4">
+        <button className="btn btn-success mb-3" onClick={openCreate}>
+          {editing ? "Edit Reminder" : "Create New Reminder"}
+        </button>
+        {showForm && (
+          <form onSubmit={submitForm} className="border p-3 mb-4">
+            <div className="mb-3">
+              <label>Priminimo minutės prieš</label>
+              <input
+                type="number" name="reminder_minutes_before"
+                className="form-control"
+                value={formData.reminder_minutes_before}
+                onChange={handleNum}
+                min="0" max="60" required
+              />
             </div>
-            {reminders.length === 0 ? (
-                <div>There are no reminders created.</div>
-            ) : (
-                <ReminderList
-                    onSuccessChange={handleSuccessNotification}
-                    reminders={reminders}
-                    refetch={refetchReminders}
-                    onEdit={handleEditButton}
-                    onReminder={handleReminderButton}
-                />
-            )}
-        </>
-    );
+            <div className="mb-3">
+              <label>Pradžios data</label>
+              <input
+                type="date" name="start_date"
+                className="form-control"
+                value={formData.start_date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Pabaigos data</label>
+              <input
+                type="date" name="end_date"
+                className="form-control"
+                value={formData.end_date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Priminimo laikas</label>
+              <input
+                type="time" name="reminder_time"
+                className="form-control"
+                value={formData.reminder_time}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Savaitės dienos</label>
+              <div className="d-flex flex-wrap gap-2">
+                {weekDays.map(w => (
+                  <label key={w.id} className="form-check-label me-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.week_days.includes(w.id)}
+                      onChange={() => toggleDay(w.id)}
+                    /> {w.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary">
+              {editing ? "Išsaugoti" : "Sukurti"}
+            </button>
+          </form>
+        )}
+        {reminders.length === 0 ? (
+          <p>No reminders.</p>
+        ) : (
+          <ReminderList
+            reminders={reminders}
+            onEdit={openEdit}
+            onReminder={id => navigate(`/reminder/${id}`)}
+          />
+        )}
+      </div>
+    </>
+  );
 };
 
 export default ReminderPage;
