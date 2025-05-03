@@ -34,7 +34,7 @@ const FormModal = (props) => {
     <div className="form-modal-backdrop">
       <div className="form-modal">
         <div className="form-modal-header d-flex justify-content-between">
-          <div></div> {/* Empty div to push the button to the right */}
+          <div></div> 
           <button
             className="btn-light mb-2"
             aria-label="Close"

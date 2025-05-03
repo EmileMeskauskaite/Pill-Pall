@@ -195,7 +195,6 @@ const RegisterForm = (props) => {
         )}
       </div>
 
-      {/* Klaidos modalis */}
       {error && (
         <>
           <div
@@ -233,7 +232,6 @@ const RegisterForm = (props) => {
         </>
       )}
 
-      {/* Sėkmės modalis */}
       {showSuccessModal && (
         <>
           <div

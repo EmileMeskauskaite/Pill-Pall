@@ -7,7 +7,6 @@ const ReminderModal = (props) => {
   const [medicineData, setMedicineData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch medicine details
   const fetchMedicineData = async () => {
     const medicineId = reminder.medicine_id;
     try {
@@ -34,7 +33,6 @@ const ReminderModal = (props) => {
     }
   };
 
-  // Update „išgėrimo“ statusą
   const updateReminderTakenStatus = async (reminderId, takenStatus) => {
     try {
       const response = await fetch(

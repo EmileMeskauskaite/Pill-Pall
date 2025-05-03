@@ -142,7 +142,6 @@ const LoginForm = (props) => {
         </p>
       </div>
 
-      {/* Klaidos modalis */}
       {showErrorModal && (
         <div
           className="modal d-block"

@@ -5,7 +5,6 @@ import MedicineList from "../components/MedicineList";
 import SuccessNotification from "../components/notifications/SuccessNotification";
 import FormModal from "../components/forms/FormModal";
 import MedicineForm from "../components/forms/MedicineForm";
-// Making big changes
 const MedicinePage = () => {
   const navigate = useNavigate();
   const [medicines, setMedicines] = useState([]);

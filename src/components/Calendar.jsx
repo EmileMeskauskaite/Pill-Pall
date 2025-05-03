@@ -62,14 +62,12 @@ const Calendar = (props) => {
               className="col-12 col-md border mb-3 mb-md-0"
               style={{ minHeight: "180px" }}
             >
-              {/* Header */}
               <div className="fw-bold bg-light py-2 text-center border-bottom">
                 <span className={isToday ? "text-primary" : ""}>
                   {daysOfWeek[index]} {formatDate(date)} {isToday && "(Šiandien)"}
                 </span>
               </div>
 
-              {/* Reminders */}
               <div className="p-2">
                 {remindersForDay.length > 0 ? (
                   remindersForDay.map((reminder) => (

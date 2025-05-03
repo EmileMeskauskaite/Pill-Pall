@@ -28,11 +28,9 @@ const ResetPassword = () => {
     setError("");
   };
   const handleBack = () => {
-    // If there’s at least one entry in the history stack, go back…
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      // …otherwise go to “/” explicitly
       navigate("/");
     }
   };
