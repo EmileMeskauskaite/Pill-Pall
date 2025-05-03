@@ -15,8 +15,8 @@ const ReminderPage = () => {
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({
     reminder_minutes_before: "0",
-    start_date: new Date().toISOString().slice(0,10),
-    end_date: new Date().toISOString().slice(0,10),
+    start_date: new Date().toISOString().slice(0, 10),
+    end_date: new Date().toISOString().slice(0, 10),
     reminder_time: "12:00",
     week_days: []
   });
@@ -69,8 +69,8 @@ const ReminderPage = () => {
     setEditing(null);
     setFormData({
       reminder_minutes_before: "0",
-      start_date: new Date().toISOString().slice(0,10),
-      end_date: new Date().toISOString().slice(0,10),
+      start_date: new Date().toISOString().slice(0, 10),
+      end_date: new Date().toISOString().slice(0, 10),
       reminder_time: "12:00",
       week_days: []
     });
@@ -81,9 +81,9 @@ const ReminderPage = () => {
     setEditing(item);
     setFormData({
       reminder_minutes_before: String(item.reminder_minutes_before),
-      start_date: item.start_date.slice(0,10),
-      end_date: item.end_date.slice(0,10),
-      reminder_time: item.reminder_time.slice(0,5),
+      start_date: item.start_date.slice(0, 10),
+      end_date: item.end_date.slice(0, 10),
+      reminder_time: item.reminder_time.slice(0, 5),
       week_days: item.week_days.map(String)
     });
     setShowForm(true);
@@ -103,7 +103,7 @@ const ReminderPage = () => {
 
   const toggleDay = (id) => {
     setFormData(prev => {
-      const days = prev.week_days.includes(id) ? prev.week_days.filter(d=>d!==id) : [...prev.week_days,id];
+      const days = prev.week_days.includes(id) ? prev.week_days.filter(d => d !== id) : [...prev.week_days, id];
       return { ...prev, week_days: days };
     });
   };
@@ -134,7 +134,7 @@ const ReminderPage = () => {
       });
       if (!res.ok) throw new Error("Save failed");
       notify(); fetchReminders(); setShowForm(false);
-    } catch(err) {
+    } catch (err) {
       console.error(err); alert(err.message);
     }
   };
@@ -145,21 +145,21 @@ const ReminderPage = () => {
       {showSuccess && <SuccessNotification />}
       <div className="container-fluid mt-4 mb-4">
 
-        <button className="btn btn-success mx-3"style={{ width: "15em" }} onClick={openCreate}>
+        <button className="btn btn-success mx-3" style={{ width: "15em" }} onClick={openCreate}>
           {editing ? "Redaguoti priminimą" : "Sukurti priminimą"}
         </button>
         {showForm && (
           <div style={backdropStyle}>
-            <div style={modalStyle}>  
+            <div style={modalStyle}>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h4>{editing ? "Redaguoti priminimą" : "Naujas priminimas"}</h4>
                 <button
-  className="btn-light mb-2"
-  aria-label="Close"
-  onClick={() => setShowForm(false)}
->
-  Atšaukti
-</button>
+                  className="btn-light mb-2"
+                  aria-label="Close"
+                  onClick={() => setShowForm(false)} 
+                >
+                  Atšaukti
+                </button>
 
 
               </div>
@@ -196,11 +196,11 @@ const ReminderPage = () => {
                 <div className="mb-3">
                   <label>Savaitės dienos</label>
                   <div className="d-flex flex-wrap gap-2">
-                    {weekDays.map(w=> (
+                    {weekDays.map(w => (
                       <label key={w.id} className="form-check-label me-2">
                         <input type="checkbox"
                           checked={formData.week_days.includes(w.id)}
-                          onChange={()=>toggleDay(w.id)} /> {w.name}
+                          onChange={() => toggleDay(w.id)} /> {w.name}
                       </label>
                     ))}
                   </div>
@@ -213,13 +213,13 @@ const ReminderPage = () => {
           </div>
         )}
         {reminders.length === 0 ? (
-          <p>No reminders.</p>
+          <p>Nėra priminimų</p>
         ) : (
           <ReminderList reminders={reminders}
             refetch={fetchReminders}
             onSuccessChange={notify}
             onEdit={openEdit}
-            onReminder={id=>navigate(`/reminder/${id}`)} />
+            onReminder={id => navigate(`/reminder/${id}`)} />
         )}
       </div>
     </>

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 const MedicineForm = (props) => {
   const { setFormData, formData, handleSubmit} = props;
 
-  // React does not like input value being undefined and suddenly defined when typing
   const defaultFormData = {
     medicine_name: "",
     strength: "",
@@ -13,7 +12,6 @@ const MedicineForm = (props) => {
 
   const mergedFormData = { ...defaultFormData, ...formData };
 
-  // If editing existing data (put method)
   useEffect(() => {
     if (!formData || Object.keys(formData).length === 0) {
       setFormData(defaultFormData);
@@ -35,20 +33,17 @@ const MedicineForm = (props) => {
 
     if (/^\d*$/.test(value)) {
       if (name === "hour") {
-        // For hours
         if (value === "" || parseInt(value) <= 23) {
           handleChange(e);
         } else {
           e.target.value = "";
         }
       } else if (name === "minute") {
-        // For minutes
         if (value === "" || parseInt(value) <= 59) {
           handleChange(e);
         } else {
           e.target.value = "";
         }
-        // For amount
       } else if (name === "amount") {
         if (value === "" || typeof parseInt(value) === "number") {
           handleChange(e);
@@ -63,10 +58,10 @@ const MedicineForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h4 className="mb-3">Add New Medicine</h4>
+      <h4 className="mb-3">Sukurti naują vaistą</h4>
 
       <div className="mb-2">
-        <label>Medicine Name</label>
+        <label>Vaisto pavadinimas</label>
         <input
           type="text"
           name="medicine_name"
@@ -78,7 +73,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Strength</label>
+        <label>Stiprumas</label>
         <input
           type="text"
           name="strength"
@@ -91,7 +86,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Amount (tablets per dose)</label>
+        <label>Kiekis (tabletės per dozę)</label>
         <input
           type="int"
           name="amount"
@@ -104,7 +99,7 @@ const MedicineForm = (props) => {
       </div>
 
       <div className="mb-2">
-        <label>Notes</label>
+        <label>Pastabos</label>
         <input
           type="text"
           name="notes"
@@ -114,7 +109,7 @@ const MedicineForm = (props) => {
         />
       </div>
 
-      <button type="submit" className="btn btn-success">Submit</button>
+      <button type="submit" className="btn btn-success">Išsaugoti</button>
     </form>
   );
 };

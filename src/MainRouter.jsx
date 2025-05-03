@@ -8,9 +8,9 @@ import {
   Route,
 } from "react-router-dom";
 import MainPage from "./pages/Index-page";
-import RegisterPage from "./pages/Register-page";
+import RegisterPage from "./pages/register-page";
 import LoginPage from "./pages/Login-page";
-import SchedulePage from "./pages/Schedule-page";
+import SchedulePage from "./pages/schedule-page";
 import MedicinePage from "./pages/Medicine-page";
 import ReminderPage from "./pages/Reminder-page";
 import CaretakerLogin from "./pages/Caretaker-login";

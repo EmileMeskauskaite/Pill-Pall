@@ -125,11 +125,11 @@ const handleReminderButton = (medicineId) => {
           className="btn btn-success mx-3"
           onClick={handleCreateButton}
         >
-          Create New Medicine
+          Sukurti naują vaistą
         </button>
       </div>
       {medicines.length === 0 ? (
-        <div>There are no medicines created.</div>
+        <div>Dar nėra sukurtų vaistų</div>
       ) : (
         <MedicineList
           className="medicine-list-container"

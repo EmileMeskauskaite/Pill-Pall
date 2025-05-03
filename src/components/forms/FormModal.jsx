@@ -33,11 +33,12 @@ const FormModal = (props) => {
   return (
     <div className="form-modal-backdrop">
       <div className="form-modal">
-        <div className="form-modal-header d-flex">
+        <div className="form-modal-header d-flex justify-content-between">
+          <div></div> {/* Empty div to push the button to the right */}
           <button
-            className="btn btn-secondary btn-sm ms-auto p-1"
-            style={{ width: "4em", fontSize: "0.9rem" }}
-            onClick={closeModal}
+            className="btn-light mb-2"
+            aria-label="Close"
+            onClick={() => { closeModal(); }}
           >
             Atšaukti
           </button>
