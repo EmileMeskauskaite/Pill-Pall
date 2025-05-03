@@ -9,7 +9,7 @@ const UsersList = (props) => {
   const [selectedUser, setSelectedUser] = useState();
 
   if (!users) {
-    return <h2>Add a user.</h2>;
+    return <h2>Pridėkite vartotoją.</h2>;
   }
 
   const handleDelete = (userId) => {
@@ -23,7 +23,7 @@ const UsersList = (props) => {
   const handleConfirm = () => {
     onUnlink(selectedUser);
     setShowWarning(false);
-  }
+  };
 
   return (
     <>
@@ -35,9 +35,9 @@ const UsersList = (props) => {
       )}
 
       <div className="mt-4">
-        <h2 className="h4 m-3">List of connected users:</h2>
+        <h2 className="h4 m-3">Prijungtų vartotojų sąrašas:</h2>
 
-        {/* Mobile Card View */}
+        {/* Mobilusis vaizdas */}
         <div className="d-md-none">
           <div className="row row-cols-1 g-4">
             {users.map((user, index) => (
@@ -54,7 +54,7 @@ const UsersList = (props) => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <div className="d-flex align-items-center gap-2">
-                        <span className="text-muted">Status:</span>
+                        <span className="text-muted">Būsena:</span>
                         {user.confirmed ? (
                           <i className="bi bi-check-circle-fill text-success"></i>
                         ) : (
@@ -66,18 +66,18 @@ const UsersList = (props) => {
                       <button
                         className="btn btn-primary py-2"
                         onClick={() => onUserClick(user.id, user.confirmed)}
-                        title="View Profile"
+                        title="Peržiūrėti profilį"
                       >
                         <i className="bi bi-person me-2"></i>
-                        View Profile
+                        Peržiūrėti profilį
                       </button>
                       <button
                         className="btn btn-danger py-2"
                         onClick={() => handleDelete(user.id)}
-                        title="Unlink User"
+                        title="Atsieti vartotoją"
                       >
                         <i className="bi bi-trash me-2"></i>
-                        Unlink User
+                        Atsieti vartotoją
                       </button>
                     </div>
                   </div>
@@ -87,18 +87,19 @@ const UsersList = (props) => {
           </div>
         </div>
 
-        {/* Desktop Table View */}
+        {/* Darbalaukio vaizdas */}
         <div className="d-none d-md-block">
           <table className="table table-bordered">
             <thead className="table-light">
               <tr>
-                <th scope="col">No.</th>
-                <th scope="col">Connected User</th>
+                <th scope="col">Nr.</th>
+                <th scope="col">Prijungtas vartotojas</th>
                 <th scope="col" style={{ width: "2em" }}>
-                  Confirmed?
+                  Patvirtintas?
                 </th>
                 <th scope="col" style={{ width: "7em" }}>
-                  Unlink User
+                  {/* galima palikti „Atsieti“ */}
+                  Atsieti
                 </th>
               </tr>
             </thead>
@@ -123,7 +124,7 @@ const UsersList = (props) => {
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(user.id)}
-                      title="Unlink User"
+                      title="Atsieti vartotoją"
                     >
                       <i className="bi bi-trash"></i>
                     </button>

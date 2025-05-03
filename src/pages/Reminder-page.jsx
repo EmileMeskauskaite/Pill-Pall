@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import ReminderList from "../components/ReminderList";
 import SuccessNotification from "../components/notifications/SuccessNotification";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import ReminderDeleteButton from "../components/buttons/ReminderDeleteButton";
 
 const ReminderPage = () => {
   const navigate = useNavigate();
@@ -11,7 +13,27 @@ const ReminderPage = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [formData, setFormData] = useState({
+    reminder_minutes_before: "0",
+    start_date: new Date().toISOString().slice(0,10),
+    end_date: new Date().toISOString().slice(0,10),
+    reminder_time: "12:00",
+    week_days: []
+  });
   const user = JSON.parse(localStorage.getItem("user"));
+
+  // Modal styles
+  const backdropStyle = {
+    position: 'fixed', inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 1000
+  };
+  const modalStyle = {
+    background: '#fff', padding: '1rem', borderRadius: '0.5rem',
+    maxWidth: '600px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    maxHeight: '95vh', overflowY: 'auto'
+  };
 
   useEffect(() => {
     if (!user) return navigate("/login");
@@ -36,32 +58,19 @@ const ReminderPage = () => {
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  // Form state
-  const defaultDate = new Date().toISOString().slice(0,10);
-  const [formData, setFormData] = useState({
-    reminder_minutes_before: "0",
-    start_date: defaultDate,
-    end_date: defaultDate,
-    reminder_time: "12:00",
-    week_days: []
-  });
-
   const weekDays = [
-    { id: "0", name: "Sekmadienis" },
-    { id: "1", name: "Pirmadienis" },
-    { id: "2", name: "Antradienis" },
-    { id: "3", name: "Trečiadienis" },
-    { id: "4", name: "Ketvirtadienis" },
-    { id: "5", name: "Penktadienis" },
-    { id: "6", name: "Šeštadienis" },
+    { id: "0", name: "Sekmadienis" }, { id: "1", name: "Pirmadienis" },
+    { id: "2", name: "Antradienis" }, { id: "3", name: "Trečiadienis" },
+    { id: "4", name: "Ketvirtadienis" }, { id: "5", name: "Penktadienis" },
+    { id: "6", name: "Šeštadienis" }
   ];
 
   const openCreate = () => {
     setEditing(null);
     setFormData({
       reminder_minutes_before: "0",
-      start_date: defaultDate,
-      end_date: defaultDate,
+      start_date: new Date().toISOString().slice(0,10),
+      end_date: new Date().toISOString().slice(0,10),
       reminder_time: "12:00",
       week_days: []
     });
@@ -94,9 +103,7 @@ const ReminderPage = () => {
 
   const toggleDay = (id) => {
     setFormData(prev => {
-      const days = prev.week_days.includes(id)
-        ? prev.week_days.filter(d => d !== id)
-        : [...prev.week_days, id];
+      const days = prev.week_days.includes(id) ? prev.week_days.filter(d=>d!==id) : [...prev.week_days,id];
       return { ...prev, week_days: days };
     });
   };
@@ -108,13 +115,15 @@ const ReminderPage = () => {
       return;
     }
     try {
-      const url = editing
-        ? `http://localhost:5169/${user.id}/rules/${editing.id}`
-        : `http://localhost:5169/${user.id}/rules`;
+      const url = editing ?
+        `http://localhost:5169/${user.id}/rules/${editing.id}` :
+        `http://localhost:5169/${user.id}/rules`;
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.token}` },
+        method, headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`
+        },
         body: JSON.stringify({
           ...formData,
           reminder_minutes_before: +formData.reminder_minutes_before,
@@ -124,12 +133,9 @@ const ReminderPage = () => {
         }),
       });
       if (!res.ok) throw new Error("Save failed");
-      notify();
-      fetchReminders();
-      setShowForm(false);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+      notify(); fetchReminders(); setShowForm(false);
+    } catch(err) {
+      console.error(err); alert(err.message);
     }
   };
 
@@ -137,79 +143,83 @@ const ReminderPage = () => {
     <>
       <Header />
       {showSuccess && <SuccessNotification />}
-      <div className="container mt-4">
-        <button className="btn btn-success mb-3" onClick={openCreate}>
-          {editing ? "Edit Reminder" : "Create New Reminder"}
+      <div className="container-fluid mt-4 mb-4">
+
+        <button className="btn btn-success mx-3"style={{ width: "15em" }} onClick={openCreate}>
+          {editing ? "Redaguoti priminimą" : "Sukurti priminimą"}
         </button>
         {showForm && (
-          <form onSubmit={submitForm} className="border p-3 mb-4">
-            <div className="mb-3">
-              <label>Priminimo minutės prieš</label>
-              <input
-                type="number" name="reminder_minutes_before"
-                className="form-control"
-                value={formData.reminder_minutes_before}
-                onChange={handleNum}
-                min="0" max="60" required
-              />
-            </div>
-            <div className="mb-3">
-              <label>Pradžios data</label>
-              <input
-                type="date" name="start_date"
-                className="form-control"
-                value={formData.start_date}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label>Pabaigos data</label>
-              <input
-                type="date" name="end_date"
-                className="form-control"
-                value={formData.end_date}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label>Priminimo laikas</label>
-              <input
-                type="time" name="reminder_time"
-                className="form-control"
-                value={formData.reminder_time}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label>Savaitės dienos</label>
-              <div className="d-flex flex-wrap gap-2">
-                {weekDays.map(w => (
-                  <label key={w.id} className="form-check-label me-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.week_days.includes(w.id)}
-                      onChange={() => toggleDay(w.id)}
-                    /> {w.name}
-                  </label>
-                ))}
+          <div style={backdropStyle}>
+            <div style={modalStyle}>  
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h4>{editing ? "Redaguoti priminimą" : "Naujas priminimas"}</h4>
+                <button
+  className="btn-light mb-2"
+  aria-label="Close"
+  onClick={() => setShowForm(false)}
+>
+  Atšaukti
+</button>
+
+
               </div>
+              <form onSubmit={submitForm}>
+                <div className="mb-3">
+                  <label>Priminimo minutės prieš</label>
+                  <input type="number" name="reminder_minutes_before"
+                    className="form-control"
+                    value={formData.reminder_minutes_before}
+                    onChange={handleNum}
+                    min="0" max="60" required />
+                </div>
+                <div className="mb-3">
+                  <label>Pradžios data</label>
+                  <input type="date" name="start_date"
+                    className="form-control"
+                    value={formData.start_date}
+                    onChange={handleChange} required />
+                </div>
+                <div className="mb-3">
+                  <label>Pabaigos data</label>
+                  <input type="date" name="end_date"
+                    className="form-control"
+                    value={formData.end_date}
+                    onChange={handleChange} required />
+                </div>
+                <div className="mb-3">
+                  <label>Priminimo laikas</label>
+                  <input type="time" name="reminder_time"
+                    className="form-control"
+                    value={formData.reminder_time}
+                    onChange={handleChange} required />
+                </div>
+                <div className="mb-3">
+                  <label>Savaitės dienos</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {weekDays.map(w=> (
+                      <label key={w.id} className="form-check-label me-2">
+                        <input type="checkbox"
+                          checked={formData.week_days.includes(w.id)}
+                          onChange={()=>toggleDay(w.id)} /> {w.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  {editing ? "Išsaugoti" : "Sukurti"}
+                </button>
+              </form>
             </div>
-            <button type="submit" className="btn btn-primary">
-              {editing ? "Išsaugoti" : "Sukurti"}
-            </button>
-          </form>
+          </div>
         )}
         {reminders.length === 0 ? (
           <p>No reminders.</p>
         ) : (
-          <ReminderList
-            reminders={reminders}
+          <ReminderList reminders={reminders}
+            refetch={fetchReminders}
+            onSuccessChange={notify}
             onEdit={openEdit}
-            onReminder={id => navigate(`/reminder/${id}`)}
-          />
+            onReminder={id=>navigate(`/reminder/${id}`)} />
         )}
       </div>
     </>

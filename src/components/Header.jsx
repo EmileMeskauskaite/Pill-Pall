@@ -14,8 +14,12 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  const userPage = userData ? "/profile-page/" + JSON.parse(userData)?.id?.toString() : "/";
-  const caretakerPage = caretakerData ? "/profile-page/" + JSON.parse(caretakerData)?.id?.toString() : "/";
+  const userPage = userData
+    ? "/profile-page/" + JSON.parse(userData)?.id?.toString()
+    : "/";
+  const caretakerPage = caretakerData
+    ? "/profile-page/" + JSON.parse(caretakerData)?.id?.toString()
+    : "/";
 
   return (
     <div className="container-fluid px-3 py-2">
@@ -31,31 +35,31 @@ const Header = () => {
         <div className="d-none d-md-flex gap-2">
           {!urlPath.includes("/profile-page/") && caretakerData && (
             <Link className="btn btn-info text-nowrap" to={caretakerPage}>
-              Profile
+              Profilis
             </Link>
           )}
           {!urlPath.includes("/profile-page/") && !caretakerData && userData && (
             <Link className="btn btn-info text-nowrap" to={userPage}>
-              My Profile
+              Mano profilis
             </Link>
           )}
           {!urlPath.includes("/caretaker-page/") && caretakerData && (
             <Link className="btn btn-warning" to="/caretaker-page">
-              User List
+              Vartotojų sąrašas
             </Link>
           )}
           {(urlPath.includes("/schedule") || urlPath.includes("/reminder")) && (
             <Link className="btn btn-primary" to="/medicine">
-              Medicine
+              Vaistai
             </Link>
           )}
           {(!urlPath.includes("/caretaker-page") && !urlPath.includes("/schedule")) && (
             <Link className="btn btn-primary" to="/schedule">
-              Schedules
+              Tvarkaraštis
             </Link>
           )}
           <Link onClick={handleLogOff} to="/" className="btn btn-danger">
-            Log Off
+            Atsijungti
           </Link>
         </div>
 
@@ -64,7 +68,7 @@ const Header = () => {
           <button
             className="btn p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label="Perjungti meniu"
             style={{ fontSize: '1.5rem' }}
           >
             <svg
@@ -93,31 +97,31 @@ const Header = () => {
           <div className="d-flex flex-column gap-2">
             {!urlPath.includes("/profile-page/") && caretakerData && (
               <Link className="btn btn-info w-100 text-nowrap" to={caretakerPage}>
-                Profile
+                Profilis
               </Link>
             )}
             {!urlPath.includes("/profile-page/") && !caretakerData && userData && (
               <Link className="btn btn-info w-100 text-nowrap" to={userPage}>
-                My Profile
+                Mano profilis
               </Link>
             )}
             {!urlPath.includes("/caretaker-page/") && caretakerData && (
               <Link className="btn btn-warning w-100" to="/caretaker-page">
-                User List
+                Vartotojų sąrašas
               </Link>
             )}
             {(urlPath.includes("/schedule") || urlPath.includes("/reminder")) && (
               <Link className="btn btn-primary w-100" to="/medicine">
-                Medicine
+                Vaistai
               </Link>
             )}
             {(!urlPath.includes("/caretaker-page") && !urlPath.includes("/schedule")) && (
               <Link className="btn btn-primary w-100" to="/schedule">
-                Schedules
+                Tvarkaraštis
               </Link>
             )}
             <Link onClick={handleLogOff} to="/" className="btn btn-danger w-100">
-              Log Off
+              Atsijungti
             </Link>
           </div>
         </div>

@@ -33,7 +33,7 @@ const SchedulePage = () => {
   const getThisWeek = () => {
     const today = new Date();
     const day = today.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day; // Adjust if today is Sunday
+    const diffToMonday = day === 0 ? -6 : 1 - day; // Koreguoja, jei šiandien sekmadienis
 
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() + diffToMonday);
@@ -55,6 +55,7 @@ const SchedulePage = () => {
   };
 
   const fetchReminders = async () => {
+    
     try {
       const response = await fetch(
         `http://localhost:5169/${userData.id}/reminders`,
@@ -66,15 +67,14 @@ const SchedulePage = () => {
           },
         }
       );
-
+      
       if (response.ok) {
         const parsed = await response.json();
         return parsed;
       } else {
-        console.error("Failed to fetch reminders");
       }
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Klaida:", err);
     }
   };
 
@@ -82,10 +82,10 @@ const SchedulePage = () => {
     <>
       <Header />
       {successShow && <SuccessNotification />}
-      <h1 className="text-center">Welcome, {userName}</h1>
+      <h1 className="text-center">Sveiki, {userName}</h1>
       <div className="container py-4">
         <h2 className="text-center mb-4"></h2>
-        <h3 className="text-center mb-4">Weekly Pill Calendar</h3>
+        <h3 className="text-center mb-4">Savaitės priminimų kalendorius</h3>
         <CalendarTimeButtons
           dateRange={dateRange}
           setDateRange={setDateRange}

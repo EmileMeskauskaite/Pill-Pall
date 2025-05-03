@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation, useParams, useSearchParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useSearchParams, useNavigate, useParams } from "react-router-dom";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -13,12 +13,11 @@ const ResetPassword = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");  
+  const token = searchParams.get("token");
 
   const isEmailForm = location.pathname.endsWith("/email");
   const isPasswordForm = location.pathname.endsWith("/password");
   const { type } = useParams();
-  console.log(type);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +27,15 @@ const ResetPassword = () => {
     }));
     setError("");
   };
-
+  const handleBack = () => {
+    // If there’s at least one entry in the history stack, go back…
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // …otherwise go to “/” explicitly
+      navigate("/");
+    }
+  };
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,15 +43,15 @@ const ResetPassword = () => {
       const res = await fetch("http://localhost:5169/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, type: type }),
+        body: JSON.stringify({ email: formData.email, type }),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Failed to send reset link.");
+        throw new Error(data.message || "Nepavyko išsiųsti nuorodos.");
       }
 
-      setSuccessMessage("Password reset email sent!");
+      setSuccessMessage("Atkūrimo nuoroda sėkmingai išsiųsta!");
     } catch (err) {
       setError(err.message);
     }
@@ -54,12 +61,12 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (formData.password !== formData.repeatPassword) {
-      setError("Passwords do not match.");
+      setError("Slaptažodžiai nesutampa.");
       return;
     }
 
     if (!token) {
-      setError("Missing or invalid token.");
+      setError("Trūksta arba neteisingas žetonas.");
       return;
     }
 
@@ -69,16 +76,16 @@ const ResetPassword = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newPassword: formData.password,
-          token
+          token,
         }),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Failed to reset password.");
+        throw new Error(data.message || "Nepavyko atnaujinti slaptažodžio.");
       }
 
-      setSuccessMessage("Password has been successfully updated!");
+      setSuccessMessage("Slaptažodis sėkmingai atnaujintas!");
     } catch (err) {
       setError(err.message);
     }
@@ -86,14 +93,23 @@ const ResetPassword = () => {
 
   return (
     <>
-    <button className="btn btn-secondary" style={{width:"5em"}} onClick={()=>{navigate("/")}}>Back</button>
+      <button
+        className="btn btn-secondary mb-3"
+        style={{ width: "5em" }}
+        onClick={handleBack}
+      >
+        ← Atgal
+      </button>
+      <h2 className="text-center mb-4">Atstatyti pamirštą slaptažodį</h2>
       <form
         autoComplete="off"
         onSubmit={isEmailForm ? handleEmailSubmit : handlePasswordSubmit}
+        className="mx-auto"
+        style={{ maxWidth: "400px" }}
       >
         {isEmailForm && (
           <div className="mb-3">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">El. pašto adresas</label>
             <input
               type="email"
               name="email"
@@ -108,7 +124,7 @@ const ResetPassword = () => {
         {isPasswordForm && (
           <>
             <div className="mb-3">
-              <label className="form-label">New Password</label>
+              <label className="form-label">Naujas slaptažodis</label>
               <input
                 type="password"
                 name="password"
@@ -121,7 +137,7 @@ const ResetPassword = () => {
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Repeat Password</label>
+              <label className="form-label">Pakartokite slaptažodį</label>
               <input
                 type="password"
                 name="repeatPassword"
@@ -139,7 +155,7 @@ const ResetPassword = () => {
         {successMessage && <div className="text-success mb-3">{successMessage}</div>}
 
         <button type="submit" className="btn btn-success w-100">
-          {isEmailForm ? "Send Reset Link" : "Change Password"}
+          {isEmailForm ? "Siųsti nuorodą" : "Keisti slaptažodį"}
         </button>
       </form>
     </>

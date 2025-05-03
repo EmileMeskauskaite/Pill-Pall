@@ -24,62 +24,36 @@ const LoginForm = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (userType == "caretaker") {
-      try {
-        const response = await fetch("http://localhost:5169/caretaker/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+    const endpoint =
+      userType === "caretaker"
+        ? "http://localhost:5169/caretaker/login"
+        : "http://localhost:5169/login";
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Failed to login");
-        }
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-        const userData = await response.json();
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Prisijungti nepavyko");
+      }
 
-        const userWithToken = {
-          ...userData.user,
-          token: userData.token
-        };
-        
-        localStorage.setItem("caretaker", JSON.stringify(userWithToken));
+      const userData = await response.json();
+      const userWithToken = { ...userData.user, token: userData.token };
+      const storageKey = userType === "caretaker" ? "caretaker" : "user";
+      localStorage.setItem(storageKey, JSON.stringify(userWithToken));
+
+      if (userType === "caretaker") {
         navigate("/caretaker-page");
-      } catch (error) {
-        setErrorMessage(error.message);
-        setShowErrorModal(true);
-      }
-    } else {
-      try {
-        const response = await fetch("http://localhost:5169/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Failed to login");
-        }
-
-        const userData = await response.json();
-
-        const userWithToken = {
-          ...userData.user,
-          token: userData.token
-        };
-        
-        localStorage.setItem("user", JSON.stringify(userWithToken));
+      } else {
         navigate("/schedule");
-      } catch (error) {
-        setErrorMessage(error.message);
-        setShowErrorModal(true);
       }
+    } catch (error) {
+      setErrorMessage(error.message);
+      setShowErrorModal(true);
     }
   };
 
@@ -93,22 +67,23 @@ const LoginForm = (props) => {
         className="p-4 rounded shadow position-relative"
       >
         <button className="btn-light mb-2" onClick={() => navigate("/")}>
-          ← Back
+          ← Atgal
         </button>
 
-        {userType == "caretaker" ? (
+        {userType === "caretaker" ? (
           <>
             <h5 className="text-center border rounded p-3 bg-light">
-              Easily monitor the medication intake of family members or clients!
+              Lengvai stebėkite vaistų vartojimą šeimos nariams ar klientams!
             </h5>
-            <h2 className="text-center mb-4">Caretaker Login</h2>
+            <h2 className="text-center mb-4">Prižiūrėtojo prisijungimas</h2>
           </>
         ) : (
-          <h2 className="text-center mb-4">Login</h2>
+          <h2 className="text-center mb-4">Prisijungimas</h2>
         )}
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label">El. paštas</label>
             <input
               type="email"
               name="email"
@@ -119,7 +94,7 @@ const LoginForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label">Slaptažodis</label>
             <input
               type="password"
               name="password"
@@ -130,42 +105,44 @@ const LoginForm = (props) => {
             />
           </div>
           <button type="submit" className="btn btn-success w-100">
-            Log in
+            Prisijungti
           </button>
         </form>
-        {userType == "caretaker" ? (
+
+        {userType === "caretaker" ? (
           <p className="text-center mt-3">
-            Don't have a caretaker account?
+            Neturite prižiūrėtojo paskyros?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/caretaker-register")}
             >
-              Register one here
+              Užsiregistruokite čia
             </button>
           </p>
         ) : (
           <p className="text-center mt-3">
-            Don't have an account?
+            Neturite paskyros?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/register")}
             >
-              Register here
+              Registruotis čia
             </button>
           </p>
         )}
+
         <p className="text-center mt-3">
-          Forgot password?
+          Pamiršote slaptažodį?{" "}
           <button
             className="btn btn-link p-0"
             onClick={() => navigate(`/reset-password/${userType}/email`)}
           >
-            Reset password here
+            Atstatyti slaptažodį
           </button>
         </p>
       </div>
 
-      {/* Error Modal */}
+      {/* Klaidos modalis */}
       {showErrorModal && (
         <div
           className="modal d-block"
@@ -175,12 +152,13 @@ const LoginForm = (props) => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title text-danger">Login Failed</h5>
+                <h5 className="modal-title text-danger">Prisijungti nepavyko</h5>
                 <button
                   type="button"
                   className="btn-close"
                   onClick={() => setShowErrorModal(false)}
-                ></button>
+                  aria-label="Uždaryti"
+                />
               </div>
               <div className="modal-body">
                 <p>{errorMessage}</p>
@@ -191,7 +169,7 @@ const LoginForm = (props) => {
                   className="btn btn-secondary"
                   onClick={() => setShowErrorModal(false)}
                 >
-                  Close
+                  Uždaryti
                 </button>
               </div>
             </div>

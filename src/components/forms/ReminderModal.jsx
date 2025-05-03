@@ -4,10 +4,10 @@ const ReminderModal = (props) => {
   const { reminder, onClose, refetch } = props;
   const userData = JSON.parse(localStorage.getItem("user"));
   const [taken, setTaken] = useState(reminder.taken);
-  const [medicineData, setMedicineData] = useState(null); // To hold the merged medicine data
-  const [loading, setLoading] = useState(true); // To track loading state for fetching medicine data
+  const [medicineData, setMedicineData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Function to fetch medicine data
+  // Fetch medicine details
   const fetchMedicineData = async () => {
     const medicineId = reminder.medicine_id;
     try {
@@ -21,21 +21,20 @@ const ReminderModal = (props) => {
           },
         }
       );
-
       if (response.ok) {
         const data = await response.json();
-        setMedicineData(data); // Merge medicine data into state
-        setLoading(false); // Set loading to false after fetching is done
+        setMedicineData(data);
       } else {
-        console.error("Failed to fetch medicine data");
-        setLoading(false);
+        console.error("Nepavyko gauti vaisto duomenų");
       }
     } catch (error) {
-      console.error("Error fetching medicine data:", error);
+      console.error("Klaida gaunant vaisto duomenis:", error);
+    } finally {
       setLoading(false);
     }
   };
 
+  // Update „išgėrimo“ statusą
   const updateReminderTakenStatus = async (reminderId, takenStatus) => {
     try {
       const response = await fetch(
@@ -49,88 +48,87 @@ const ReminderModal = (props) => {
           body: JSON.stringify({ taken: takenStatus }),
         }
       );
-
       if (response.ok) {
         refetch();
         onClose();
       } else {
-        console.error("Failed to update reminder");
+        console.error("Nepavyko atnaujinti priminimo");
       }
     } catch (error) {
-      console.error("Error updating reminder:", error);
+      console.error("Klaida atnaujinant priminimą:", error);
     }
   };
 
-  // Toggle the "taken" checkbox is clicked
-  const handleTakenChange = () => {
-    const newTakenStatus = !taken;
-    setTaken(newTakenStatus);
-    updateReminderTakenStatus(reminder.id, newTakenStatus);
-  };
-
-  // Fetch medicine data when the component is mounted
   useEffect(() => {
     fetchMedicineData();
   }, [reminder.medicine_id]);
 
-  // While waiting for medicine info to be fetched, display loading message
   if (loading) {
     return (
       <div className="form-modal-backdrop">
         <div className="reminder-modal-container">
-          <p>Loading medicine data...</p>
+          <p>Kraunama vaisto informacija…</p>
         </div>
       </div>
     );
   }
 
+  const time = reminder.reminder_time.slice(0, 5);
+
+  const toggleTaken = () => {
+    const newStatus = !taken;
+    setTaken(newStatus);
+    updateReminderTakenStatus(reminder.id, newStatus);
+  };
+
   return (
     <div className="form-modal-backdrop">
       <div className="reminder-modal-container">
         <div className="reminder-modal-header">
-          <button className="reminder-modal-close-button" onClick={onClose}>
+          <button
+            className="reminder-modal-close-button"
+            onClick={onClose}
+            aria-label="Uždaryti"
+          >
             &times;
           </button>
         </div>
         <div className="reminder-modal-body">
-          <h2>{medicineData?.medicine_name || reminder.medicine_name}</h2>
+          <h2>{medicineData.medicine_name}</h2>
           <p>
-            <strong>Strength:</strong>{" "}
-            {medicineData?.strength || reminder.strength}
+            <strong>Stiprumas:</strong> {medicineData.strength}
           </p>
           <p>
-            <strong>Amount:</strong> {medicineData?.amount || reminder.amount}
+            <strong>Kiekis:</strong> {medicineData.amount}
           </p>
           <p>
-            <strong>Notes:</strong> {medicineData?.notes || reminder.notes}
+            <strong>Pastabos:</strong> {medicineData.notes || "-"}
           </p>
           <p>
-            <strong>Reminder Date:</strong>{" "}
-            {new Date(reminder.reminder_date).toLocaleDateString()}
+            <strong>Priminimo data:</strong>{" "}
+            {new Date(reminder.reminder_date).toLocaleDateString("lt-LT", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
           </p>
           <p>
-            <strong>Reminder Time:</strong> {reminder.reminder_time}
+            <strong>Priminimo laikas:</strong> {time}
           </p>
-
           <div className="reminder-modal-checkbox-container">
             <label
               htmlFor="taken"
               className="d-flex gap-3 border rounded p-2"
-              style={{
-                cursor: "pointer",
-              }}
+              style={{ cursor: "pointer" }}
             >
-              <div>Mark as TAKEN</div>
+              <span>Pažymėti kaip išgerta</span>
               <input
-                className="form-check-input"
-                style={{
-                  cursor: "pointer",
-                }}
                 type="checkbox"
                 id="taken"
                 checked={taken}
-                onChange={handleTakenChange}
-                disabled={loading} // Disable checkbox while loading
+                onChange={toggleTaken}
+                className="form-check-input"
+                style={{ cursor: "pointer" }}
               />
             </label>
           </div>

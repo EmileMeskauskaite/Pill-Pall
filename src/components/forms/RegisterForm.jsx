@@ -29,33 +29,25 @@ const RegisterForm = (props) => {
 
   const validatePassword = (password) => {
     if (password.length < 8)
-      return "Password must be at least 8 characters long";
+      return "Slaptažodis turi būti bent 8 simbolių ilgio";
     if (!/[A-Z]/.test(password))
-      return "Password must contain at least one uppercase letter";
+      return "Slaptažodis turi turėti bent vieną didžiąją raidę";
     if (!/[0-9]/.test(password))
-      return "Password must contain at least one number";
+      return "Slaptažodis turi turėti bent vieną skaitmenį";
     return null;
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const { name, surname, date_of_birth, email, password, repeatPassword } =
-      form;
+    const { name, surname, date_of_birth, email, password, repeatPassword } = form;
 
-    if (
-      !name ||
-      !surname ||
-      !date_of_birth ||
-      !email ||
-      !password ||
-      !repeatPassword
-    ) {
-      setError("Please fill in all fields");
+    if (!name || !surname || !date_of_birth || !email || !password || !repeatPassword) {
+      setError("Prašome užpildyti visus laukus");
       return;
     }
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError("Slaptažodžiai nesutampa");
       return;
     }
 
@@ -65,59 +57,26 @@ const RegisterForm = (props) => {
       return;
     }
 
-    if (userType == "caretaker") {
-      try {
-        const response = await fetch(
-          "http://localhost:5169/caretaker/register",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name,
-              surname,
-              date_of_birth,
-              email,
-              password,
-            }),
-          }
-        );
+    const endpoint =
+      userType === "caretaker"
+        ? "http://localhost:5169/caretaker/register"
+        : "http://localhost:5169/register";
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Failed to register");
-        }
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, surname, date_of_birth, email, password }),
+      });
 
-        setShowSuccessModal(true);
-      } catch (err) {
-        setError(err.message || "Registration failed.");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Registracija nepavyko");
       }
-    } else {
-      try {
-        const response = await fetch("http://localhost:5169/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            surname,
-            date_of_birth,
-            email,
-            password,
-          }),
-        });
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Failed to register");
-        }
-
-        setShowSuccessModal(true);
-      } catch (err) {
-        setError(err.message || "Registration failed.");
-      }
+      setShowSuccessModal(true);
+    } catch (err) {
+      setError(err.message || "Registracija nepavyko");
     }
   };
 
@@ -139,17 +98,16 @@ const RegisterForm = (props) => {
           className="btn-light mb-2"
           onClick={() => window.history.back()}
         >
-          ← Back
+          ← Atgal
         </button>
 
-        {userType == "caretaker" ? (
-          <h2 className="text-center mb-4">Caretaker Register</h2>
-        ) : (
-          <h2 className="text-center mb-4">Register</h2>
-        )}
+        <h2 className="text-center mb-4">
+          {userType === "caretaker" ? "Prižiūrėtojo registracija" : "Registracija"}
+        </h2>
+
         <form onSubmit={handleRegister}>
           <div className="mb-3">
-            <label className="form-label">First Name</label>
+            <label className="form-label">Vardas</label>
             <input
               type="text"
               name="name"
@@ -159,7 +117,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Last Name</label>
+            <label className="form-label">Pavardė</label>
             <input
               type="text"
               name="surname"
@@ -169,7 +127,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Date of Birth</label>
+            <label className="form-label">Gimimo data</label>
             <input
               type="date"
               name="date_of_birth"
@@ -179,7 +137,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label">El. paštas</label>
             <input
               type="email"
               name="email"
@@ -189,7 +147,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label">Slaptažodis</label>
             <input
               type="password"
               name="password"
@@ -199,7 +157,7 @@ const RegisterForm = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Repeat Password</label>
+            <label className="form-label">Pakartokite slaptažodį</label>
             <input
               type="password"
               name="repeatPassword"
@@ -210,33 +168,34 @@ const RegisterForm = (props) => {
           </div>
 
           <button type="submit" className="btn btn-success w-100">
-            Register
+            Registruotis
           </button>
         </form>
-        {userType == "caretaker" ? (
+
+        {userType === "caretaker" ? (
           <p className="text-center mt-3">
-            Already have a caretaker account?{" "}
+            Jau turite prižiūrėtojo paskyrą?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/caretaker-login")}
             >
-              Login here
+              Prisijungti čia
             </button>
           </p>
         ) : (
           <p className="text-center mt-3">
-            Already have an account?{" "}
+            Jau turite paskyrą?{" "}
             <button
               className="btn btn-link p-0"
               onClick={() => navigate("/login")}
             >
-              Login here
+              Prisijungti čia
             </button>
           </p>
         )}
       </div>
 
-      {/* ✅ Error Modal */}
+      {/* Klaidos modalis */}
       {error && (
         <>
           <div
@@ -247,14 +206,13 @@ const RegisterForm = (props) => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title text-danger">
-                    Registration Failed
-                  </h5>
+                  <h5 className="modal-title text-danger">Registracija nepavyko</h5>
                   <button
                     type="button"
                     className="btn-close"
                     onClick={() => setError(null)}
-                  ></button>
+                    aria-label="Uždaryti"
+                  />
                 </div>
                 <div className="modal-body">
                   <p>{error}</p>
@@ -265,17 +223,17 @@ const RegisterForm = (props) => {
                     className="btn btn-secondary"
                     onClick={() => setError(null)}
                   >
-                    Close
+                    Uždaryti
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show"></div>
+          <div className="modal-backdrop fade show" />
         </>
       )}
 
-      {/* ✅ Success Modal */}
+      {/* Sėkmės modalis */}
       {showSuccessModal && (
         <>
           <div
@@ -286,11 +244,11 @@ const RegisterForm = (props) => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">Success</h5>
+                  <h5 className="modal-title">Registracija sėkminga</h5>
                 </div>
                 <div className="modal-body">
                   <p>
-                    Successfully Registered! Please check your email to confirm.
+                    Sėkmingai užsiregistravote! Patikrinkite savo el. paštą patvirtinimui.
                   </p>
                 </div>
                 <div className="modal-footer">
@@ -298,13 +256,13 @@ const RegisterForm = (props) => {
                     className="btn btn-primary"
                     onClick={() => navigate("/")}
                   >
-                    OK
+                    Gerai
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show"></div>
+          <div className="modal-backdrop fade show" />
         </>
       )}
     </div>

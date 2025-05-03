@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const ConfirmNotification = (props) => {
   const { onConfirm, onCancel, customMessage } = props;
@@ -9,14 +9,14 @@ const ConfirmNotification = (props) => {
         {customMessage ? (
           <p>{customMessage}</p>
         ) : (
-          <p>⚠️ Are you sure you want to delete this item?</p>
+          <p>⚠️ Ar tikrai norite ištrinti šį elementą?</p>
         )}
         <div className="modal-buttons">
           <button className="btn btn-danger btn-sm me-2" onClick={onConfirm}>
-            OK
+            Taip
           </button>
           <button className="btn btn-secondary btn-sm" onClick={onCancel}>
-            Cancel
+            Atšaukti
           </button>
         </div>
       </div>

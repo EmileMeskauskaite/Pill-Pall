@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
 import pillImage from '../assets/Pill_image.png';
@@ -9,15 +9,30 @@ const MainPage = () => {
 
     return (
         <div className="index-background">
-            <img className="main-page-image" src={pillImage} alt="Background Image" />
+            <img className="main-page-image" src={pillImage} alt="Fono paveikslėlis" />
             <div className="card-container-right">
                 <div className="card card-right">
-                    <h1>Welcome to Pill Pal</h1>
-                    <p>Your ultimate medicine reminder app. Stay on top of your health with ease!</p>
+                    <h1>Sveiki atvykę į Vaistūną</h1>
+                    <p>Vaistūnas - jūsų patikima vaistų priminimų programa. Lengvai rūpinkitės savo sveikata!</p>
                     <div>
-                        <button className="btn btn-green" onClick={() => navigate('/register')}>Register</button>
-                        <button className="btn btn-primary" onClick={()=> navigate('/login')}>Log In</button>
-                        <button className="btn btn-warning" onClick={()=> navigate('/caretaker-login')}>Caretaker</button>
+                        <button
+                            className="btn btn-green"
+                            onClick={() => navigate('/register')}
+                        >
+                            Registruotis
+                        </button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate('/login')}
+                        >
+                            Prisijungti
+                        </button>
+                        <button
+                            className="btn btn-warning"
+                            onClick={() => navigate('/caretaker-login')}
+                        >
+                            Prižiūrėtojas
+                        </button>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,17 @@
 import "../../pages/styles.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const FormModal = (props) => {
-  const { handleCloseModal, form: FormComponent, submitFunction, existingData } = props;
+  const {
+    handleCloseModal,
+    form: FormComponent,
+    submitFunction,
+    existingData,
+  } = props;
+
   const [isOpen, setIsOpen] = useState(true);
   const [formData, setFormData] = useState(existingData || {});
+  const [error, setError] = useState(null);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -15,32 +22,37 @@ const FormModal = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    submitFunction(formData);
-  }
+    try {
+      setError(null);
+      await submitFunction(formData);
+    } catch (err) {
+      setError(err.message || "Įvyko klaida");
+    }
+  };
 
   return (
     <div className="form-modal-backdrop">
       <div className="form-modal">
         <div className="form-modal-header d-flex">
           <button
-            className="btn btn-secondary ms-auto"
-            style={{
-              width: "5em",
-            }}
+            className="btn btn-secondary btn-sm ms-auto p-1"
+            style={{ width: "4em", fontSize: "0.9rem" }}
             onClick={closeModal}
           >
-            Cancel
+            Atšaukti
           </button>
         </div>
-        <div
-          style={{
-            textAlign: "center",
-            fontSize: "1.25em",
-            fontWeight: "bold",
-          }}
-        >
-          {/* Form Section */}
-          <FormComponent handleSubmit={handleSubmit} formData={formData} setFormData={setFormData}/>  
+        <div className="p-3">
+          {error && (
+            <div className="alert alert-danger mb-3">
+              {error}
+            </div>
+          )}
+          <FormComponent
+            handleSubmit={handleSubmit}
+            formData={formData}
+            setFormData={setFormData}
+          />
         </div>
       </div>
     </div>
