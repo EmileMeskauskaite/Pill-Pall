@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -82,44 +82,44 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
+<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require("express");
-const RemindersController = require("../controllers/RemindersController");
-const tokenVerification = require("../tokenVerification");
-const { verify } = require("jsonwebtoken");
-const router = express.Router();
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = <span class="cstat-no" title="statement not covered" >require("express");</span>
+const RemindersController = <span class="cstat-no" title="statement not covered" >require("../controllers/RemindersController");</span>
+const tokenVerification = <span class="cstat-no" title="statement not covered" >require("../tokenVerification");</span>
+const { verify } = <span class="cstat-no" title="statement not covered" >require("jsonwebtoken");</span>
+const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
-router.get("/:userId/rules", tokenVerification.verifyUser, RemindersController.getAllRules);
-router.get("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.getOneRule);
-router.put("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.updateRule);
-router.delete("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.deleteRule);
-router.delete("/:userId/rules", tokenVerification.verifyUser, RemindersController.deleteMultipleRules);
-router.post("/:userId/rules", tokenVerification.verifyUser, RemindersController.createRule);
+<span class="cstat-no" title="statement not covered" >router.get("/:userId/rules", tokenVerification.verifyUser, RemindersController.getAllRules);</span>
+<span class="cstat-no" title="statement not covered" >router.get("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.getOneRule);</span>
+<span class="cstat-no" title="statement not covered" >router.put("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.updateRule);</span>
+<span class="cstat-no" title="statement not covered" >router.delete("/:userId/rules/:reminderId", tokenVerification.verifyUser, RemindersController.deleteRule);</span>
+<span class="cstat-no" title="statement not covered" >router.delete("/:userId/rules", tokenVerification.verifyUser, RemindersController.deleteMultipleRules);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/:userId/rules", tokenVerification.verifyUser, RemindersController.createRule);</span>
 &nbsp;
 // Actual reminders
-router.get("/:userId/reminder/:reminderId/medicine-name", tokenVerification.verifyUser, RemindersController.getMedicineNameFromReminderId);
-router.get("/:userId/reminders", tokenVerification.verifyUser, RemindersController.getAllReminders);
-router.put("/:userId/:reminderId/reminders", tokenVerification.verifyUser, RemindersController.updateTakenStatus);
-router.get("/:userId/reminders/:medicineId", tokenVerification.verifyUser, RemindersController.getRulesByMedicineId);   
-module.exports = router;
+<span class="cstat-no" title="statement not covered" >router.get("/:userId/reminder/:reminderId/medicine-name", tokenVerification.verifyUser, RemindersController.getMedicineNameFromReminderId);</span>
+<span class="cstat-no" title="statement not covered" >router.get("/:userId/reminders", tokenVerification.verifyUser, RemindersController.getAllReminders);</span>
+<span class="cstat-no" title="statement not covered" >router.put("/:userId/:reminderId/reminders", tokenVerification.verifyUser, RemindersController.updateTakenStatus);</span>
+<span class="cstat-no" title="statement not covered" >router.get("/:userId/reminders/:medicineId", tokenVerification.verifyUser, RemindersController.getRulesByMedicineId);   </span>
+<span class="cstat-no" title="statement not covered" >module.exports = router;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -127,7 +127,7 @@ module.exports = router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T15:44:04.573Z
+                at 2025-05-04T15:37:13.197Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>21/21</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>21/21</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,60 +90,63 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require("express");
-const UsersController = require("../controllers/UsersController");
-const tokenVerification = require("../tokenVerification");
-const router = express.Router();
-router.post("/register", UsersController.registerUser);
-router.get("/confirm", UsersController.confirm);
-router.get("/confirm-caretaker", UsersController.confirmCaretakerUser);
-router.post("/login", UsersController.loginUser);
-router.post("/caretaker/register", UsersController.registerCaretaker);
-router.post("/caretaker/login", UsersController.loginCaretaker);
-router.post("/request-password-reset", UsersController.requestPasswordReset);
-router.post("/reset-password", UsersController.resetPassword);
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = <span class="cstat-no" title="statement not covered" >require("express");</span>
+const UsersController = <span class="cstat-no" title="statement not covered" >require("../controllers/UsersController");</span>
+const tokenVerification = <span class="cstat-no" title="statement not covered" >require("../tokenVerification");</span>
+const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
+<span class="cstat-no" title="statement not covered" >router.post("/register", UsersController.registerUser);</span>
+<span class="cstat-no" title="statement not covered" >router.get("/confirm", UsersController.confirm);</span>
+<span class="cstat-no" title="statement not covered" >router.get("/confirm-caretaker", UsersController.confirmCaretakerUser);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/login", UsersController.loginUser);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/caretaker/register", UsersController.registerCaretaker);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/caretaker/login", UsersController.loginCaretaker);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/request-password-reset", UsersController.requestPasswordReset);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/reset-password", UsersController.resetPassword);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/verify-password", UsersController.verifyPassword);</span>
 &nbsp;
+<span class="cstat-no" title="statement not covered" >router.get("/caretaker/:caretakerId/users",tokenVerification.verifyCaretaker, UsersController.getCaretakerUsers);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/:caretakerId/caretaker/add-user", tokenVerification.verifyCaretaker, UsersController.sendCaretakerConfirmation);</span>
+<span class="cstat-no" title="statement not covered" >router.delete("/:caretakerId/caretaker/remove-user",tokenVerification.verifyCaretaker, UsersController.removeUserFromCaretaker)</span>
+<span class="cstat-no" title="statement not covered" >router.get("/caretaker/user-data/:caretakerId/:userId",tokenVerification.verifyCaretaker, UsersController.getUserDataForCaretaker);</span>
 &nbsp;
+<span class="cstat-no" title="statement not covered" >router.put("/user/:userId", tokenVerification.verifyUser, UsersController.updateUser);</span>
+<span class="cstat-no" title="statement not covered" >router.put("/user/:userId/password", tokenVerification.verifyUser, UsersController.updatePassword);</span>
+<span class="cstat-no" title="statement not covered" >router.put("/caretaker/:caretakerId",tokenVerification.verifyCaretaker, UsersController.updateCaretaker);</span>
+<span class="cstat-no" title="statement not covered" >router.put("/caretaker/:caretakerId/password", tokenVerification.verifyCaretaker, UsersController.updatePassword);</span>
 &nbsp;
-router.get("/caretaker/:caretakerId/users",tokenVerification.verifyCaretaker, UsersController.getCaretakerUsers);
-router.post("/:caretakerId/caretaker/add-user", tokenVerification.verifyCaretaker, UsersController.sendCaretakerConfirmation);
-router.delete("/:caretakerId/caretaker/remove-user",tokenVerification.verifyCaretaker, UsersController.removeUserFromCaretaker)
-router.get("/caretaker/user-data/:caretakerId/:userId",tokenVerification.verifyCaretaker, UsersController.getUserDataForCaretaker);
+<span class="cstat-no" title="statement not covered" >router.delete("/user/:userId", tokenVerification.verifyUser, UsersController.deleteUser);</span>
+<span class="cstat-no" title="statement not covered" >router.delete("/caretaker/:caretakerId",tokenVerification.verifyCaretaker, UsersController.deleteCaretaker);</span>
 &nbsp;
-router.put("/user/:userId", tokenVerification.verifyUser, UsersController.updateUser);
-router.put("/caretaker/:caretakerId",tokenVerification.verifyCaretaker, UsersController.updateCaretaker);
-&nbsp;
-router.delete("/user/:userId", tokenVerification.verifyUser, UsersController.deleteUser);
-router.delete("/caretaker/:caretakerId",tokenVerification.verifyCaretaker, UsersController.deleteCaretaker);
-&nbsp;
-module.exports = router;
+<span class="cstat-no" title="statement not covered" >module.exports = router;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -151,7 +154,7 @@ module.exports = router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T15:44:04.573Z
+                at 2025-05-04T15:37:13.197Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
