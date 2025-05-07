@@ -328,4 +328,249 @@ describe('UsersController', () => {
       expect(console.error).toHaveBeenCalled();
     });
   });
+  describe('requestPasswordReset', () => {
+    it('should return 404 if user not found', async () => {
+      req.body = { email: 'notfound@example.com' };
+      Users.getUserByEmail.mockResolvedValue(null);
+      await UsersController.requestPasswordReset(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+    });
+
+    it('should send reset email if user is found', async () => {
+      req.body = { email: 'user@example.com' };
+      Users.getUserByEmail.mockResolvedValue({ id: 1, email: 'user@example.com' });
+      Users.generatePasswordResetToken.mockReturnValue('reset-token');
+      Users.sendPasswordResetEmail.mockResolvedValue(true);
+      await UsersController.requestPasswordReset(req, res);
+      expect(Users.sendPasswordResetEmail).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({ message: 'Password reset email sent.' });
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should return 400 if token or password is missing', async () => {
+      req.body = { token: '', newPassword: '' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Token and new password are required.' });
+    });
+
+    it('should return 400 if password is too short', async () => {
+      req.body = { token: 'token', newPassword: 'Pass1' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must be at least 8 characters long.' });
+    });
+
+    it('should return 400 if password missing uppercase', async () => {
+      req.body = { token: 'token', newPassword: 'password123' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must contain at least one uppercase letter.' });
+    });
+
+    it('should return 400 if password missing number', async () => {
+      req.body = { token: 'token', newPassword: 'Password' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must contain at least one number.' });
+    });
+
+    it('should reset password successfully', async () => {
+      req.body = { token: 'valid-token', newPassword: 'Password123' };
+      jwt.verify.mockReturnValue({ userId: 1, type: 'user' });
+      bcrypt.hash.mockResolvedValue('hashedPassword');
+      Users.updatePassword.mockResolvedValue(true);
+      await UsersController.resetPassword(req, res);
+      expect(Users.updatePassword).toHaveBeenCalledWith(1, 'hashedPassword', 'user');
+      expect(res.json).toHaveBeenCalledWith({ message: 'Password has been updated.' });
+    });
+
+    it('should return 404 if update fails', async () => {
+      req.body = { token: 'valid-token', newPassword: 'Password123' };
+      jwt.verify.mockReturnValue({ userId: 2, type: 'user' });
+      bcrypt.hash.mockResolvedValue('hashedPassword');
+      Users.updatePassword.mockResolvedValue(false);
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+    });
+  });
+  // (Existing code preserved)
+
+// Additional NEW tests for uncovered parts
+
+describe('getUserDataForCaretaker', () => {
+  it('should return 403 if caretaker access not confirmed', async () => {
+    req.params = { caretakerId: '1', userId: '2' };
+    Users.isCaretakerConfirmed.mockResolvedValue(false);
+    await UsersController.getUserDataForCaretaker(req, res);
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Caretaker access not confirmed for this user.' });
+  });
+
+  it('should return 404 if user not found', async () => {
+    req.params = { caretakerId: '1', userId: '2' };
+    Users.isCaretakerConfirmed.mockResolvedValue(true);
+    Users.getUserById.mockResolvedValue(null);
+    await UsersController.getUserDataForCaretaker(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
+  });
+
+  it('should return token and user data if confirmed', async () => {
+    req.params = { caretakerId: '1', userId: '2' };
+    Users.isCaretakerConfirmed.mockResolvedValue(true);
+    Users.getUserById.mockResolvedValue({
+      id: 2,
+      name: 'Alice',
+      surname: 'Smith',
+      email: 'alice@example.com',
+      date_of_birth: '1990-01-01'
+    });
+    jwt.sign.mockReturnValue('jwt-token');
+    await UsersController.getUserDataForCaretaker(req, res);
+    expect(res.json).toHaveBeenCalledWith({
+      token: 'jwt-token',
+      user: {
+        id: 2,
+        name: 'Alice',
+        surname: 'Smith',
+        email: 'alice@example.com',
+        date_of_birth: '1990-01-01'
+      }
+    });
+  });
+});
+
+describe('sendCaretakerConfirmation', () => {
+  it('should return 400 if user does not exist', async () => {
+    req.body = {
+      caretakerId: 1,
+      userEmail: 'missing@example.com',
+      caretakerName: 'John',
+      caretakerSurname: 'Doe'
+    };
+    Users.getUserByEmail.mockResolvedValue(null);
+    await UsersController.sendCaretakerConfirmation(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User with such email does not exist.' });
+  });
+
+  it('should return 400 if user is unconfirmed', async () => {
+    req.body = {
+      caretakerId: 1,
+      userEmail: 'unconfirmed@example.com',
+      caretakerName: 'John',
+      caretakerSurname: 'Doe'
+    };
+    Users.getUserByEmail.mockResolvedValue({ confirmed: false });
+    await UsersController.sendCaretakerConfirmation(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'This user has not confirmed their email yet.' });
+  });
+
+  it('should return 400 if caretaker-user relation already exists', async () => {
+    req.body = {
+      caretakerId: 1,
+      userEmail: 'existing@example.com',
+      caretakerName: 'John',
+      caretakerSurname: 'Doe'
+    };
+    Users.getUserByEmail.mockResolvedValue({ id: 2, confirmed: true });
+    Users.createCaretakerUser.mockRejectedValue(new Error('Already linked'));
+    await UsersController.sendCaretakerConfirmation(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Already linked' });
+  });
+});
+
+describe('confirmCaretakerUser', () => {
+  it('should return 400 if token is missing', async () => {
+    req.query = {};
+    await UsersController.confirmCaretakerUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith('Token missing');
+  });
+
+  it('should return 404 if confirmation fails', async () => {
+    req.query = { x: 'invalid-token' };
+    jwt.verify.mockReturnValue({ caretakerId: 1, userId: 2 });
+    Users.confirmCaretakerUser.mockResolvedValue(false);
+    await UsersController.confirmCaretakerUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith('Invalid confirmation');
+  });
+});
+  describe('requestPasswordReset', () => {
+    it('should return 404 if user not found', async () => {
+      req.body = { email: 'notfound@example.com' };
+      Users.getUserByEmail.mockResolvedValue(null);
+      await UsersController.requestPasswordReset(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+    });
+
+    it('should send reset email if user is found', async () => {
+      req.body = { email: 'user@example.com' };
+      Users.getUserByEmail.mockResolvedValue({ id: 1, email: 'user@example.com' });
+      Users.generatePasswordResetToken.mockReturnValue('reset-token');
+      Users.sendPasswordResetEmail.mockResolvedValue(true);
+      await UsersController.requestPasswordReset(req, res);
+      expect(Users.sendPasswordResetEmail).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({ message: 'Password reset email sent.' });
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should return 400 if token or password is missing', async () => {
+      req.body = { token: '', newPassword: '' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Token and new password are required.' });
+    });
+
+    it('should return 400 if password is too short', async () => {
+      req.body = { token: 'token', newPassword: 'Pass1' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must be at least 8 characters long.' });
+    });
+
+    it('should return 400 if password missing uppercase', async () => {
+      req.body = { token: 'token', newPassword: 'password123' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must contain at least one uppercase letter.' });
+    });
+
+    it('should return 400 if password missing number', async () => {
+      req.body = { token: 'token', newPassword: 'Password' };
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Password must contain at least one number.' });
+    });
+
+    it('should reset password successfully', async () => {
+      req.body = { token: 'valid-token', newPassword: 'Password123' };
+      jwt.verify.mockReturnValue({ userId: 1, type: 'user' });
+      bcrypt.hash.mockResolvedValue('hashedPassword');
+      Users.updatePassword.mockResolvedValue(true);
+      await UsersController.resetPassword(req, res);
+      expect(Users.updatePassword).toHaveBeenCalledWith(1, 'hashedPassword', 'user');
+      expect(res.json).toHaveBeenCalledWith({ message: 'Password has been updated.' });
+    });
+
+    it('should return 404 if update fails', async () => {
+      req.body = { token: 'valid-token', newPassword: 'Password123' };
+      jwt.verify.mockReturnValue({ userId: 2, type: 'user' });
+      bcrypt.hash.mockResolvedValue('hashedPassword');
+      Users.updatePassword.mockResolvedValue(false);
+      await UsersController.resetPassword(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+    });
+  });
+
 });
