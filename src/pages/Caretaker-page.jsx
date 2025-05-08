@@ -42,7 +42,7 @@ const CaretakerPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const url = `http://localhost:5169/caretaker/${caretakerData.id}/users`;
+      const url = `http://localhost:3000/caretaker/${caretakerData.id}/users`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -71,7 +71,7 @@ const CaretakerPage = () => {
 
   const onUnlink = async (userId) => {
     try {
-      const url = `http://localhost:5169/${caretakerData.id}/caretaker/remove-user`;
+      const url = `http://localhost:3000/${caretakerData.id}/caretaker/remove-user`;
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
@@ -109,7 +109,7 @@ const CaretakerPage = () => {
 
   const fetchUserData = async (userId) => {
     try {
-      const url = `http://localhost:5169/caretaker/user-data/${caretakerData.id}/${userId}`;
+      const url = `http://localhost:3000/caretaker/user-data/${caretakerData.id}/${userId}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -135,7 +135,7 @@ const CaretakerPage = () => {
       caretakerSurname: caretakerData.surname,
     };
   
-    const url = `http://localhost:5169/${caretakerData.id}/caretaker/add-user`;
+    const url = `http://localhost:3000/${caretakerData.id}/caretaker/add-user`;
     const response = await fetch(url, {
       method: "POST",
       headers: {

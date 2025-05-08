@@ -11,7 +11,7 @@ const ReminderModal = (props) => {
     const medicineId = reminder.medicine_id;
     try {
       const response = await fetch(
-        `http://localhost:5169/${userData.id}/medicines/${medicineId}`,
+        `http://localhost:3000/${userData.id}/medicines/${medicineId}`,
         {
           method: "GET",
           headers: {
@@ -36,7 +36,7 @@ const ReminderModal = (props) => {
   const updateReminderTakenStatus = async (reminderId, takenStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:5169/${userData.id}/${reminderId}/reminders`,
+        `http://localhost:3000/${userData.id}/${reminderId}/reminders`,
         {
           method: "PUT",
           headers: {

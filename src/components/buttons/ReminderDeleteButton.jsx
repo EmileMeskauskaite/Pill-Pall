@@ -27,7 +27,7 @@ const ReminderDeleteButton = (props) => {
         try {
             const userId = userData.id;
             const response = await fetch(
-                `http://localhost:5169/${userId}/rules/${reminderId}`,
+                `http://localhost:3000/${userId}/rules/${reminderId}`,
                 {
                     method: "DELETE",
                     headers: {

@@ -58,7 +58,7 @@ const SchedulePage = () => {
     
     try {
       const response = await fetch(
-        `http://localhost:5169/${userData.id}/reminders`,
+        `http://localhost:3000/${userData.id}/reminders`,
         {
           method: "GET",
           headers: {

@@ -38,7 +38,7 @@ const ResetPassword = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5169/request-password-reset", {
+      const res = await fetch("http://localhost:3000/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, type }),
@@ -69,7 +69,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5169/reset-password", {
+      const res = await fetch("http://localhost:3000/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -26,7 +26,7 @@ const MedicineDeleteButton = (props) => {
     try {
       const userId = userData.id;
       const response = await fetch(
-        `http://localhost:5169/${userId}/medicines/${medicineId}`,
+        `http://localhost:3000/${userId}/medicines/${medicineId}`,
         {
           method: "DELETE",
           headers: {

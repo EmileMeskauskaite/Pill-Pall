@@ -19,7 +19,7 @@ const ReminderButton = ({ reminder, refetch }) => {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
         const res = await fetch(
-          `http://localhost:5169/${user.id}/reminder/${reminder.id}/medicine-name`,
+          `http://localhost:3000/${user.id}/reminder/${reminder.id}/medicine-name`,
           {
             headers: {
               "Content-Type": "application/json",

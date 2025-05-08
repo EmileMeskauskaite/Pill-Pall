@@ -64,8 +64,8 @@ const ProfilePage = () => {
 
     const endpoint =
       userType === "caretaker"
-        ? `http://localhost:5169/caretaker/${userData.id}`
-        : `http://localhost:5169/user/${userData.id}`;
+        ? `http://localhost:3000/caretaker/${userData.id}`
+        : `http://localhost:3000/user/${userData.id}`;
 
     try {
       const response = await fetch(endpoint, {
@@ -107,7 +107,7 @@ const ProfilePage = () => {
     }
 
     try {
-      const verifyResponse = await fetch("http://localhost:5169/verify-password", {
+      const verifyResponse = await fetch("http://localhost:3000/verify-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -122,7 +122,7 @@ const ProfilePage = () => {
       }
 
       const response = await fetch(
-        `http://localhost:5169/${userType}/${userData.id}/password`,
+        `http://localhost:3000/${userType}/${userData.id}/password`,
         {
           method: "PUT",
           headers: {
@@ -152,8 +152,8 @@ const ProfilePage = () => {
 
     const endpoint =
       userType === "caretaker"
-        ? `http://localhost:5169/caretaker/${userData.id}`
-        : `http://localhost:5169/user/${userData.id}`;
+        ? `http://localhost:3000/caretaker/${userData.id}`
+        : `http://localhost:3000/user/${userData.id}`;
 
     try {
       const response = await fetch(endpoint, {

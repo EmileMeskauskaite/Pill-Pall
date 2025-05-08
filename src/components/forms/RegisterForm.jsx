@@ -59,8 +59,8 @@ const RegisterForm = (props) => {
 
     const endpoint =
       userType === "caretaker"
-        ? "http://localhost:5169/caretaker/register"
-        : "http://localhost:5169/register";
+        ? "http://localhost:3000/caretaker/register"
+        : "http://localhost:3000/register";
 
     try {
       const response = await fetch(endpoint, {

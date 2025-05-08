@@ -43,7 +43,7 @@ const ReminderPage = () => {
   const fetchReminders = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5169/${user.id}/reminders/${medicineId}`,
+        `http://localhost:3000/${user.id}/reminders/${medicineId}`,
         { headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.token}` } }
       );
       if (!res.ok) return navigate("/404");
@@ -116,8 +116,8 @@ const ReminderPage = () => {
     }
     try {
       const url = editing ?
-        `http://localhost:5169/${user.id}/rules/${editing.id}` :
-        `http://localhost:5169/${user.id}/rules`;
+        `http://localhost:3000/${user.id}/rules/${editing.id}` :
+        `http://localhost:3000/${user.id}/rules`;
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, {
         method, headers: {

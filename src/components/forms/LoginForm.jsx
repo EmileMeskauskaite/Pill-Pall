@@ -26,8 +26,8 @@ const LoginForm = (props) => {
     e.preventDefault();
     const endpoint =
       userType === "caretaker"
-        ? "http://localhost:5169/caretaker/login"
-        : "http://localhost:5169/login";
+        ? "http://localhost:3000/caretaker/login"
+        : "http://localhost:3000/login";
 
     try {
       const response = await fetch(endpoint, {

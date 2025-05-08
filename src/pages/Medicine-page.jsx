@@ -26,7 +26,7 @@ const MedicinePage = () => {
     try {
       const userId = userData.id;
       const response = await fetch(
-        `http://localhost:5169/${userId}/medicines`,
+        `http://localhost:3000/${userId}/medicines`,
         {
           method: "GET",
           headers: {
@@ -72,8 +72,8 @@ const MedicinePage = () => {
   const handleFormSubmit = async (formData) => {
     try {
       const url = editingMedicine
-        ? `http://localhost:5169/${userData.id}/medicines/${editingMedicine.id}`
-        : `http://localhost:5169/${userData.id}/medicines`;
+        ? `http://localhost:3000/${userData.id}/medicines/${editingMedicine.id}`
+        : `http://localhost:3000/${userData.id}/medicines`;
   
       const method = editingMedicine ? "PUT" : "POST";
   
