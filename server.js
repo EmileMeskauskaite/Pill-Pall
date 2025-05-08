@@ -32,6 +32,6 @@ app.use(reminderRoutes);
 setInterval(sendMedicineReminders, 10 * 1000);
 
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Serveris veikia http://localhost:${port}`);
 });
